@@ -30,7 +30,8 @@ class ARoAssets {
     /// print(animationPath); // Output: assets/animations/offline.json
     /// ```
     Map<String, String> map = {
-      'nofound': 'assets/animations/nofound.json',
+      'descarga': 'assets/animations/waterloader.json',
+      'printing': 'assets/animations/printing.json',
       'offline': 'assets/animations/offline.json',
       'logout': 'assets/animations/logout.json',
     };

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:smvt/app/presentation/pages/details/printing.dart';
 
-import '../../../domain/entities/models/reports.dart';
+import 'descarga.dart';
+import 'historial.dart';
+
+import '../../../config/themes/themedata.dart';
 import '../../../domain/entities/models/tank.dart';
+import '../../../domain/entities/models/reports.dart';
 
 import '../../../../core/widgets/fuel_tank.dart';
 import '../../../../core/utils/aro_size_scaler.dart';
@@ -30,16 +35,47 @@ class _DetailsPageState extends State<DetailsPage> {
     Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
   ];
 
-  void _showAlertDialog(BuildContext context) {
+  void _showAlertDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.blue.shade50,
+          backgroundColor: secondaryColor,
           content: HistorialDetails(
             height: widget.hw.pHeight(75),
             width: widget.hw.pWidth(50),
             historial: historial,
+          ),
+        );
+      },
+    );
+  }
+
+  void _initDescarga() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: secondaryColor,
+          content: DescargaPage(
+            height: widget.hw.pHeight(75),
+            width: widget.hw.pWidth(50),
+          ),
+        );
+      },
+    );
+  }
+
+  void _initPrinting() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: secondaryColor,
+          content: Printing(
+            height: widget.hw.pHeight(75),
+            width: widget.hw.pWidth(50),
           ),
         );
       },
@@ -73,7 +109,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                       SizedBox(height: 15),
                       Text(
-                        'Vacio: 10 cms',
+                        'Vacio: 30 cms',
                         style: TextStyle(
                           fontSize: widget.hw.pText(2),
                           fontWeight: FontWeight.bold,
@@ -81,7 +117,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                       ),
                       Text(
-                        'Nivel: 10 cms',
+                        'Nivel: 70 cms',
                         style: TextStyle(
                           fontSize: widget.hw.pText(2),
                           fontWeight: FontWeight.bold,
@@ -98,7 +134,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       Row(
                         children: [
                           Text(
-                            'Lleno: 10 %',
+                            'Lleno: 70 %',
                             style: TextStyle(
                               fontSize: widget.hw.pText(2),
                               fontWeight: FontWeight.bold,
@@ -130,7 +166,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                       SizedBox(height: 15),
                       Text(
-                        '1,000 Lts',
+                        '3,000 Lts',
                         style: TextStyle(
                           fontSize: widget.hw.pText(2),
                           fontWeight: FontWeight.bold,
@@ -138,7 +174,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                       ),
                       Text(
-                        '1,000 Lts',
+                        '7,000 Lts',
                         style: TextStyle(
                           fontSize: widget.hw.pText(2),
                           fontWeight: FontWeight.bold,
@@ -156,30 +192,33 @@ class _DetailsPageState extends State<DetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// Print
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ARoImage(
-                        img: 'print',
-                        type: 'png',
-                        height: widget.hw.pHeight(15),
-                        fit: BoxFit.contain,
-                      ),
-                      Text(
-                        'Imprimir\nEstatus',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: widget.hw.pText(2),
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                  GestureDetector(
+                    onTap: () => _initPrinting(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ARoImage(
+                          img: 'print',
+                          type: 'png',
+                          height: widget.hw.pHeight(15),
+                          fit: BoxFit.contain,
                         ),
-                      ),
-                    ],
+                        Text(
+                          'Imprimir\nEstatus',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: widget.hw.pText(2),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   /// Reports
                   GestureDetector(
-                    onTap: () => _showAlertDialog(context),
+                    onTap: () => _showAlertDialog(),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -203,143 +242,36 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
 
                   /// Iniciar descarga
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ARoImage(
-                        img: 'descarga',
-                        type: 'png',
-                        height: widget.hw.pHeight(15),
-                        fit: BoxFit.contain,
-                      ),
-                      Text(
-                        'Iniciar\nDescarga',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: widget.hw.pText(2),
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                  GestureDetector(
+                    onTap: () => _initDescarga(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ARoImage(
+                          img: 'descarga',
+                          type: 'png',
+                          height: widget.hw.pHeight(15),
+                          fit: BoxFit.contain,
                         ),
-                      ),
-                    ],
+                        Text(
+                          'Iniciar\nDescarga',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: widget.hw.pText(2),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   /// Terminar Descarga
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ARoImage(
-                        img: 'termino',
-                        type: 'png',
-                        height: widget.hw.pHeight(15),
-                        fit: BoxFit.contain,
-                      ),
-                      Text(
-                        'Terminar\nDescarga',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: widget.hw.pText(2),
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class HistorialDetails extends StatefulWidget {
-  const HistorialDetails({
-    super.key,
-    required this.height,
-    required this.width,
-    required this.historial,
-  });
-
-  final double height;
-  final double width;
-  final List<Reporte> historial;
-
-  @override
-  State<HistorialDetails> createState() => _HistorialDetailsState();
-}
-
-class _HistorialDetailsState extends State<HistorialDetails> {
-  List<Reporte> historial = [];
-
-  void updateItem(int i) {
-    for (var e in historial) {
-      e.isSelected = false;
-    }
-
-    setState(() {
-      historial[i].isSelected = !historial[i].isSelected;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    historial = widget.historial;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: widget.height,
-      width: widget.width / 1.2,
-      color: Colors.blue.shade50,
-      child: Column(
-        children: [
-          Text(
-            'Historial de Descargas',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: widget.height / 1.21,
-            child: ListView.builder(
-              itemCount: historial.length,
-              itemBuilder: (context, i) {
-                return Container(
-                  margin: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: widget.historial[i].isSelected
-                        ? Colors.green.shade100
-                        : Colors.grey.shade300,
-                  ),
-                  child: ListTile(
-                    title: Text(
-                      '${historial[i].date} - ${historial[i].tipo}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    trailing: Icon(
-                      historial[i].isSelected
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                      color: historial[i].isSelected
-                          ? Colors.green.shade300
-                          : Colors.grey.shade100,
-                    ),
-
-                    onTap: () => updateItem(i),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
       ),
     );
   }

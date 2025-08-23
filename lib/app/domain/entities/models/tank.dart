@@ -1,16 +1,6 @@
 import 'package:flutter/material.dart' show Color, Colors;
 
 class Tank {
-  String nameTank;
-  String product;
-  double percentage;
-  String liters;
-  bool isSelected;
-  double capacityCms;
-  double currentLevelCms;
-  Color scaleColor;
-  bool isActive;
-
   Tank({
     required this.nameTank,
     required this.capacityCms,
@@ -22,6 +12,16 @@ class Tank {
     required this.scaleColor,
     required this.isActive,
   });
+
+  String nameTank;
+  String product;
+  double percentage;
+  String liters;
+  bool isSelected;
+  double capacityCms;
+  double currentLevelCms;
+  Color scaleColor;
+  bool isActive;
 
   Tank copyWith({
     String? nameTank,

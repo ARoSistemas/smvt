@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/aro_size_scaler.dart';
 import 'item_tank.dart';
+import '../details/details_page.dart';
 
 import '../../../domain/entities/models/tank.dart';
 
+import '../../../../core/utils/aro_size_scaler.dart';
 import '../../../../core/utils/product_color.dart';
 
 class HomePage extends StatefulWidget {
@@ -40,6 +41,14 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+  void goDetails({required ARoSizeScaler hw, required Tank tank}) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DetailsPage(hw: hw, tank: tank),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -53,18 +62,18 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           appBar: AppBar(title: const Text('ControlBIn - Tanques')),
           backgroundColor: Colors.grey.shade100,
-          body: Container(
-            height: alto,
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
+          body: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Center(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   GestureDetector(
                     onTap: () {
                       tanks[0].isSelected = true;
                       tanks[1].isSelected = false;
                       setState(() {});
+                      goDetails(hw: hw, tank: tanks[0]);
                     },
                     child: SizedBox(
                       height: alto / 2,
@@ -81,6 +90,7 @@ class _HomePageState extends State<HomePage> {
                       tanks[0].isSelected = false;
                       tanks[1].isSelected = true;
                       setState(() {});
+                      goDetails(hw: hw, tank: tanks[1]);
                     },
                     child: SizedBox(
                       height: alto / 2,

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:smvt/app/presentation/pages/details/printing.dart';
 
+import 'printing.dart';
 import 'descarga.dart';
 import 'historial.dart';
 
@@ -30,7 +30,7 @@ class _DetailsPageState extends State<DetailsPage> {
   late Timer _timer;
 
   List<Reporte> historial = [
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: true),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
     Reporte(date: '2025-08-01 00:15', tipo: 'Estatus', isSelected: false),
     Reporte(date: '2025-08-01 01:00', tipo: 'Estatus', isSelected: false),
     Reporte(date: '2025-08-01 03:00', tipo: 'Estatus', isSelected: false),
@@ -39,14 +39,50 @@ class _DetailsPageState extends State<DetailsPage> {
     Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
     Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
     Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
+    Reporte(date: '2025-08-01 00:15', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 01:00', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 03:00', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 12:00', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
+    Reporte(date: '2025-08-01 00:15', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 01:00', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 03:00', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 12:00', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
+    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
   ];
 
-  void _showHistorial() {
+  void _showMenu() {
+    switch (_selectedIndex) {
+      case 0:
+        _mnuPrinting();
+        break;
+      case 1:
+        _mnuHistorial();
+        break;
+      case 2:
+        _mnuDescarga();
+        break;
+    }
+  }
+
+  void _mnuHistorial() {
     _timer.cancel();
     _counter = 0;
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: secondaryColor,
@@ -62,7 +98,7 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
-  void _initDescarga() {
+  void _mnuDescarga() {
     _timer.cancel();
     _counter = 0;
 
@@ -83,7 +119,7 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
-  void _initPrinting() {
+  void _mnuPrinting() {
     _timer.cancel();
     _counter = 0;
 
@@ -106,7 +142,7 @@ class _DetailsPageState extends State<DetailsPage> {
   void _initTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _counter++;
-      if (_counter == 20) {
+      if (_counter == 30) {
         if (mounted) {
           _timer.cancel();
           Navigator.pop(context);
@@ -124,161 +160,168 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ControlBIn - Tanques')),
+      appBar: AppBar(
+        title: Text(
+          'ControlBIn - ${widget.tank.nameTank} ${widget.tank.product}  ',
+        ),
+      ),
       backgroundColor: Colors.grey.shade100,
       body: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10),
         child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: widget.hw.pHeight(5)),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Divider(color: Colors.transparent),
 
-              /// Tank Details
-              Stack(
-                children: [
-                  /// Tank
-                  Positioned(
-                    top: -60,
-                    left: widget.hw.pWidth(22),
-                    child: SizedBox(
-                      height: widget.hw.pHeight(58),
-                      width: widget.hw.pWidth(60),
-                      child: AnimatedFuelTank(
-                        fuelLevel: widget.tank.percentage,
-                        tankColor: widget.tank.scaleColor,
-                        isActive: widget.tank.isActive,
+                /// Tank Details
+                Stack(
+                  children: [
+                    /// Tank
+                    Positioned(
+                      top: -20,
+                      left: widget.hw.pWidth(22),
+                      child: SizedBox(
+                        height: widget.hw.pHeight(52),
+                        width: widget.hw.pWidth(60),
+                        child: AnimatedFuelTank(
+                          fuelLevel: widget.tank.percentage,
+                          tankColor: widget.tank.scaleColor,
+                          isActive: widget.tank.isActive,
+                        ),
                       ),
                     ),
-                  ),
 
-                  /// porcentaje
-                  Positioned(
-                    top: widget.hw.height * 0.09,
-                    left: widget.hw.width * 0.44,
-                    child: Text(
-                      '80 %',
-                      style: TextStyle(
-                        fontSize: widget.hw.pText(7),
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    /// porcentaje
+                    Positioned(
+                      top: widget.hw.height * 0.06,
+                      left: widget.hw.width * 0.44,
+                      child: Text(
+                        '70 %',
+                        style: TextStyle(
+                          fontSize: widget.hw.pText(7),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  ),
 
-                  /// Name Tank
-                  Positioned(
-                    top: -5,
-                    left: widget.hw.width * 0.49,
-                    child: Text(
-                      widget.tank.nameTank,
-                      style: TextStyle(
-                        fontSize: widget.hw.pText(2),
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    /// Name Tank
+                    Positioned(
+                      top: -5,
+                      left: widget.hw.width * 0.49,
+                      child: Text(
+                        widget.tank.nameTank,
+                        style: TextStyle(
+                          fontSize: widget.hw.pText(2),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  ),
 
-                  /// Product
-                  Positioned(
-                    top: widget.hw.height * 0.35,
-                    left: widget.hw.width * 0.49,
-                    child: Text(
-                      widget.tank.product,
-                      style: TextStyle(
-                        fontSize: widget.hw.pText(2),
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    /// Product
+                    Positioned(
+                      top: widget.hw.height * 0.32,
+                      left: widget.hw.width * 0.49,
+                      child: Text(
+                        widget.tank.product,
+                        style: TextStyle(
+                          fontSize: widget.hw.pText(2),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  ),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// Centimetros
-                      Column(
-                        children: [
-                          ARoImage(
-                            img: 'centimetros',
-                            type: 'png',
-                            height: widget.hw.pHeight(15),
-                            fit: BoxFit.contain,
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            'Vacio: 30 cms',
-                            style: TextStyle(
-                              fontSize: widget.hw.pText(2),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// Centimetros
+                        Row(
+                          children: [
+                            ARoImage(
+                              img: 'nivel',
+                              type: 'png',
+                              height: widget.hw.pHeight(15),
+                              fit: BoxFit.contain,
                             ),
-                          ),
-                          Text(
-                            'Nivel: 70 cms',
-                            style: TextStyle(
-                              fontSize: widget.hw.pText(2),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                            SizedBox(width: 25),
+                            Column(
+                              children: [
+                                Text(
+                                  'Vacio: 30 cms',
+                                  style: TextStyle(
+                                    fontSize: widget.hw.pText(2),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  'Nivel: 70 cms',
+                                  style: TextStyle(
+                                    fontSize: widget.hw.pText(2),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
 
-                      SizedBox(
-                        height: widget.hw.pHeight(40),
-                        width: widget.hw.pWidth(50),
-                      ),
+                        SizedBox(
+                          height: widget.hw.pHeight(40),
+                          width: widget.hw.pWidth(50),
+                        ),
 
-                      /// Litros
-                      Column(
-                        children: [
-                          ARoImage(
-                            img: 'centimetros',
-                            type: 'png',
-                            height: widget.hw.pHeight(15),
-                            fit: BoxFit.contain,
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            '3,000 Lts',
-                            style: TextStyle(
-                              fontSize: widget.hw.pText(2),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                        /// Litros
+                        Row(
+                          children: [
+                            ARoImage(
+                              img: 'litros',
+                              type: 'png',
+                              height: widget.hw.pHeight(15),
+                              fit: BoxFit.contain,
                             ),
-                          ),
-                          Text(
-                            '7,000 Lts',
-                            style: TextStyle(
-                              fontSize: widget.hw.pText(2),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                            SizedBox(width: 15),
+                            Column(
+                              children: [
+                                Text(
+                                  '3,000 Lts',
+                                  style: TextStyle(
+                                    fontSize: widget.hw.pText(2),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  '7,000 Lts',
+                                  style: TextStyle(
+                                    fontSize: widget.hw.pText(2),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
-              SizedBox(height: widget.hw.pHeight(5)),
+                Divider(color: Colors.transparent),
 
-              /// Botones
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Print
-                  GestureDetector(
-                    onTap: () {
-                      _selectedIndex = 0;
-                      setState(() {});
-                      _initPrinting();
-                    },
-                    child: Container(
+                /// Botones
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Print
+                    Container(
                       padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
                         color: _selectedIndex == 0
@@ -313,17 +356,10 @@ class _DetailsPageState extends State<DetailsPage> {
                         ],
                       ),
                     ),
-                  ),
 
-                  /// Reports
-                  GestureDetector(
-                    onTap: () {
-                      _selectedIndex = 1;
-                      setState(() {});
-                      _showHistorial();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(25),
+                    /// Reports
+                    Container(
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: _selectedIndex == 1
                             ? Colors.blue.withValues(alpha: 0.2)
@@ -357,17 +393,10 @@ class _DetailsPageState extends State<DetailsPage> {
                         ],
                       ),
                     ),
-                  ),
 
-                  /// Iniciar descarga
-                  GestureDetector(
-                    onTap: () {
-                      _selectedIndex = 2;
-                      setState(() {});
-                      _initDescarga();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(25),
+                    /// Iniciar descarga
+                    Container(
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: _selectedIndex == 2
                             ? Colors.blue.withValues(alpha: 0.2)
@@ -401,14 +430,56 @@ class _DetailsPageState extends State<DetailsPage> {
                         ],
                       ),
                     ),
-                  ),
-
-                  /// Terminar Descarga
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          /// Aceptar
+          FloatingActionButton(
+            backgroundColor: secondaryColor,
+            heroTag: 'accept',
+            onPressed: () => _showMenu(),
+            child: const Icon(
+              Icons.subdirectory_arrow_left,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(width: 50),
+
+          /// Izquierda
+          FloatingActionButton(
+            backgroundColor: secondaryColor,
+            heroTag: 'left',
+            onPressed: () {
+              if (_selectedIndex > 0) {
+                _selectedIndex--;
+                setState(() {});
+              }
+            },
+            child: const Icon(Icons.arrow_back, color: Colors.black),
+          ),
+          const SizedBox(width: 16),
+
+          /// Derecha
+          FloatingActionButton(
+            backgroundColor: secondaryColor,
+            heroTag: 'down',
+            onPressed: () {
+              if (_selectedIndex < 2) {
+                _selectedIndex++;
+                setState(() {});
+              }
+            },
+            child: const Icon(Icons.arrow_forward, color: Colors.black),
+          ),
+        ],
       ),
     );
   }

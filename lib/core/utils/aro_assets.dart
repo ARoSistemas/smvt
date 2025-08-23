@@ -62,7 +62,8 @@ class ARoAssets {
       'historial': 'assets/png/historial.png',
       'descarga': 'assets/png/descarga.png',
       'termino': 'assets/png/termino.png',
-      'centimetros': 'assets/png/cms.png',
+      'nivel': 'assets/png/nivel.png',
+      'litros': 'assets/png/litros.png',
     };
     return map[asset] ?? 'assets/png/noimage.png';
   }

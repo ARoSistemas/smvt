@@ -52,7 +52,7 @@ class _PrintingState extends State<Printing> {
 
           SizedBox(
             height: widget.height * 0.6,
-            width: widget.width,
+            width: widget.width * 0.5,
             child: Lottie.asset(
               ARoAssets.animations('printing'),
               fit: BoxFit.cover,

@@ -16,6 +16,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
   List<Tank> tanks = [
     Tank(
       nameTank: 'Tank1',
@@ -41,10 +43,10 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  void goDetails({required ARoSizeScaler hw, required Tank tank}) {
+  void goDetails({required ARoSizeScaler hw}) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => DetailsPage(hw: hw, tank: tank),
+        builder: (_) => DetailsPage(hw: hw, tank: tanks[_selectedIndex]),
       ),
     );
   }
@@ -63,19 +65,14 @@ class _HomePageState extends State<HomePage> {
           appBar: AppBar(title: const Text('ControlBIn - Tanques')),
           backgroundColor: Colors.grey.shade100,
           body: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
+            padding: const EdgeInsets.only(left: 10, top: 10, right: 10),
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      tanks[0].isSelected = true;
-                      tanks[1].isSelected = false;
-                      setState(() {});
-                      goDetails(hw: hw, tank: tanks[0]);
-                    },
-                    child: SizedBox(
+              child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
                       height: alto / 2,
                       child: TankDetails(
                         tank: tanks[0],
@@ -84,15 +81,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      tanks[0].isSelected = false;
-                      tanks[1].isSelected = true;
-                      setState(() {});
-                      goDetails(hw: hw, tank: tanks[1]);
-                    },
-                    child: SizedBox(
+                    SizedBox(
                       height: alto / 2,
                       child: TankDetails(
                         tank: tanks[1],
@@ -101,10 +90,53 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              /// Aceptar
+              FloatingActionButton(
+                heroTag: 'accept',
+                onPressed: () => goDetails(hw: hw),
+                child: const Icon(Icons.subdirectory_arrow_left),
+              ),
+              const SizedBox(height: 50),
+
+              /// Arriba
+              FloatingActionButton(
+                heroTag: 'up',
+                onPressed: () {
+                  if (tanks[1].isSelected) {
+                    tanks[0].isSelected = true;
+                    tanks[1].isSelected = false;
+                    _selectedIndex = 0;
+                    setState(() {});
+                  }
+                },
+                child: const Icon(Icons.arrow_upward),
+              ),
+              const SizedBox(height: 16),
+
+              /// Abajo
+              FloatingActionButton(
+                heroTag: 'down',
+                onPressed: () {
+                  if (tanks[0].isSelected) {
+                    tanks[0].isSelected = false;
+                    tanks[1].isSelected = true;
+                    _selectedIndex = 1;
+                    setState(() {});
+                  }
+                },
+                child: const Icon(Icons.arrow_downward),
+              ),
+            ],
           ),
         );
       },

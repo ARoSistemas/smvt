@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app/config/themes/themedata.dart';
-import 'app/presentation/pages/home/home_page.dart';
+import 'app/presentation/pages/loading/page_loading.dart';
 import 'app/presentation/providers/login/login_provider.dart';
 
 Future<void> main() async {
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: lightTheme,
-        home: const HomePage(),
+        home: const LoadingPage(),
       ),
     );
   }

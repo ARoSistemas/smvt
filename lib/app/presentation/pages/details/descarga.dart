@@ -39,26 +39,37 @@ class DescargaPage extends StatelessWidget {
 
           GestureDetector(
             onTap: () => Navigator.of(context).pop(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ARoImage(
-                  img: 'termino',
-                  type: 'png',
-                  height: height * 0.2,
-                  fit: BoxFit.contain,
+            child: Container(
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.blue.withValues(alpha: 0.5),
+                  width: 2,
                 ),
-                SizedBox(height: 10),
-                Text(
-                  'Terminar Descarga',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: height * 0.05,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ARoImage(
+                    img: 'termino',
+                    type: 'png',
+                    height: height * 0.2,
+                    fit: BoxFit.contain,
                   ),
-                ),
-              ],
+                  SizedBox(height: 10),
+                  Text(
+                    'Terminar Descarga',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: height * 0.05,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

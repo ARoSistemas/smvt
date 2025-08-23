@@ -24,7 +24,9 @@ class _PrintingState extends State<Printing> {
     super.initState();
 
     _timer = Timer(Duration(seconds: 3), () {
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
       _timer.cancel();
     });
   }
@@ -36,24 +38,24 @@ class _PrintingState extends State<Printing> {
       width: widget.width / 1.2,
       color: secondaryColor,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'Imprimiendo...',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 50,
               fontWeight: FontWeight.bold,
               color: primaryColor,
             ),
           ),
 
           SizedBox(
-            height: widget.height * 0.8,
+            height: widget.height * 0.6,
             width: widget.width,
             child: Lottie.asset(
               ARoAssets.animations('printing'),
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
         ],

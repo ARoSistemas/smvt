@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../config/themes/themedata.dart';
@@ -21,14 +23,28 @@ class HistorialDetails extends StatefulWidget {
 
 class _HistorialDetailsState extends State<HistorialDetails> {
   List<Reporte> historial = [];
+  int _counter = 0;
+  late Timer _timer;
 
   void updateItem(int i) {
     for (var e in historial) {
       e.isSelected = false;
     }
 
-    setState(() {
-      historial[i].isSelected = !historial[i].isSelected;
+    historial[i].isSelected = !historial[i].isSelected;
+    _counter = 0;
+    setState(() {});
+  }
+
+  void _initTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _counter++;
+      if (_counter == 20) {
+        if (mounted) {
+          _timer.cancel();
+          Navigator.pop(context);
+        }
+      }
     });
   }
 
@@ -36,6 +52,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
   void initState() {
     super.initState();
     historial = widget.historial;
+    _initTimer();
   }
 
   @override

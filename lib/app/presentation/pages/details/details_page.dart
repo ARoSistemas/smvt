@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'printing.dart';
 import 'descarga.dart';
 import 'historial.dart';
 
 import '../../../config/themes/themedata.dart';
+
 import '../../../domain/entities/models/tank.dart';
 import '../../../domain/entities/models/reports.dart';
+import '../../../domain/repositories/cmd_stream_repository.dart';
 
 import '../../../../core/widgets/fuel_tank.dart';
 import '../../../../core/utils/aro_size_scaler.dart';
@@ -25,6 +28,8 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  StreamSubscription<String>? _cmdSubscription;
+
   int _selectedIndex = 0;
   int _counter = 0;
   late Timer _timer;
@@ -62,7 +67,7 @@ class _DetailsPageState extends State<DetailsPage> {
     Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
   ];
 
-  void _showMenu() {
+  void _selectMenu() {
     switch (_selectedIndex) {
       case 0:
         _mnuPrinting();
@@ -93,8 +98,11 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
         );
       },
-    ).then((_) {
+    ).then((isPrinting) {
       _initTimer();
+      if (isPrinting == true) {
+        _mnuPrinting();
+      }
     });
   }
 
@@ -123,6 +131,7 @@ class _DetailsPageState extends State<DetailsPage> {
     _timer.cancel();
     _counter = 0;
 
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -137,6 +146,55 @@ class _DetailsPageState extends State<DetailsPage> {
     ).then((_) {
       _initTimer();
     });
+
+    // final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
+    // cmdStream.send('getstatus');
+
+    // /// Espera la respuesta por máximo 10 segundos
+    // final completer = Completer<String>();
+    // late StreamSubscription sub;
+    // sub = cmdStream.cmdStreamListen.listen((response) {
+    //   /// falta la respuesta
+    //   if (response == 'status_ok') {
+    //     completer.complete(response);
+    //     sub.cancel();
+    //   }
+    // });
+
+    // completer.future
+    //     .timeout(Duration(seconds: 10))
+    //     .then((_) {
+    //       ///
+    //       /// Teniendo el nivel actual se prepara la info y se manda
+    //       /// por puerto serial para ser impresa.
+    //       ///
+    //       cmdStream.send('se manda el json del ticket');
+
+    //       if (!mounted) return;
+    //       showDialog(
+    //         context: context,
+    //         builder: (BuildContext context) {
+    //           return AlertDialog(
+    //             backgroundColor: secondaryColor,
+    //             content: Printing(
+    //               height: widget.hw.pHeight(75),
+    //               width: widget.hw.pWidth(50),
+    //             ),
+    //           );
+    //         },
+    //       ).then((_) {
+    //         _initTimer();
+    //       });
+    //     })
+    //     .catchError((_) {
+    //       sub.cancel();
+    //       if (!mounted) return;
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //           content: Text('No se recibió respuesta del ControlBIn Tanques'),
+    //         ),
+    //       );
+    //     });
   }
 
   void _initTimer() {
@@ -151,14 +209,70 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
+  void _initStream() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cmdStream = Provider.of<CmdStreamRepository>(
+        context,
+        listen: false,
+      );
+      _cmdSubscription = cmdStream.cmdStreamListen.listen((cmd) {
+        if (!mounted) return;
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          switch (cmd) {
+            case 'left':
+              if (_selectedIndex > 0) {
+                _selectedIndex--;
+                setState(() {});
+              }
+              break;
+            case 'right':
+              if (_selectedIndex < 2) {
+                _selectedIndex++;
+                setState(() {});
+              }
+              break;
+            case 'accept':
+              _selectMenu();
+              break;
+            case 'initload':
+              // TODO: Aqui se inicia el proceso de carga.
+              /// Se solicita primero el nivel actual
+              ///
+              /// Se guarda y se mantiene a la espera el siguiente estatus
+              ///
+              /// Cuando se toca en finalizar entonces, se recibe el nuevo estatus
+              /// Y se procede con las demás operaciones.
+              break;
+            default:
+          }
+        }
+
+        if (cmd == 'findescarga') {
+          // TODO: Aquí se maneja la respuesta de la búsqueda de descarga.
+          print('Respuesta de la búsqueda de descarga recibida');
+        }
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _initTimer();
+
+    _initStream();
+  }
+
+  @override
+  void dispose() {
+    _cmdSubscription?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -247,7 +361,7 @@ class _DetailsPageState extends State<DetailsPage> {
                               height: widget.hw.pHeight(15),
                               fit: BoxFit.contain,
                             ),
-                            SizedBox(width: 25),
+                            SizedBox(width: 5),
                             Column(
                               children: [
                                 Text(
@@ -445,7 +559,7 @@ class _DetailsPageState extends State<DetailsPage> {
           FloatingActionButton(
             backgroundColor: secondaryColor,
             heroTag: 'accept',
-            onPressed: () => _showMenu(),
+            onPressed: () => cmdStream.cmdStreamSend.add('accept'),
             child: const Icon(
               Icons.subdirectory_arrow_left,
               color: Colors.black,
@@ -457,12 +571,7 @@ class _DetailsPageState extends State<DetailsPage> {
           FloatingActionButton(
             backgroundColor: secondaryColor,
             heroTag: 'left',
-            onPressed: () {
-              if (_selectedIndex > 0) {
-                _selectedIndex--;
-                setState(() {});
-              }
-            },
+            onPressed: () => cmdStream.cmdStreamSend.add('left'),
             child: const Icon(Icons.arrow_back, color: Colors.black),
           ),
           const SizedBox(width: 16),
@@ -471,12 +580,7 @@ class _DetailsPageState extends State<DetailsPage> {
           FloatingActionButton(
             backgroundColor: secondaryColor,
             heroTag: 'down',
-            onPressed: () {
-              if (_selectedIndex < 2) {
-                _selectedIndex++;
-                setState(() {});
-              }
-            },
+            onPressed: () => cmdStream.cmdStreamSend.add('right'),
             child: const Icon(Icons.arrow_forward, color: Colors.black),
           ),
         ],

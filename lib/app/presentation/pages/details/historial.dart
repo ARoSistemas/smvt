@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../config/themes/themedata.dart';
 import '../../../domain/entities/models/reports.dart';
+import '../../../domain/repositories/cmd_stream_repository.dart';
 
 class HistorialDetails extends StatefulWidget {
   const HistorialDetails({
@@ -23,6 +25,8 @@ class HistorialDetails extends StatefulWidget {
 
 class _HistorialDetailsState extends State<HistorialDetails> {
   final ScrollController _scrollController = ScrollController();
+  StreamSubscription<String>? _cmdSubscription;
+
   int _selectedIndex = 0;
 
   List<Reporte> historial = [];
@@ -30,13 +34,14 @@ class _HistorialDetailsState extends State<HistorialDetails> {
   late Timer _timer;
 
   void _printTicket() {
+    // TODO: Se valida que se manda a imprimir
     // print(
     //   'Printing ticket for: $_selectedIndex ::  ${historial[_selectedIndex].date} - ${historial[_selectedIndex].tipo} ',
     // );
 
     if (mounted) {
       _timer.cancel();
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     }
   }
 
@@ -75,6 +80,39 @@ class _HistorialDetailsState extends State<HistorialDetails> {
     }
   }
 
+  void _initStream() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cmdStream = Provider.of<CmdStreamRepository>(
+        context,
+        listen: false,
+      );
+      _cmdSubscription = cmdStream.cmdStreamListen.listen((cmd) {
+        if (!mounted) return;
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          switch (cmd) {
+            case 'up':
+              if (_selectedIndex > 0) {
+                _selectedIndex--;
+                _updateItem();
+              }
+              break;
+            case 'down':
+              if (_selectedIndex < historial.length - 1) {
+                _selectedIndex++;
+                _updateItem();
+              }
+              break;
+            case 'accept':
+              _printTicket();
+              break;
+
+            default:
+          }
+        }
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +122,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
       if (mounted) {
         if (historial.isNotEmpty) {
           _updateItem();
+          _initStream();
         }
       }
     });
@@ -93,12 +132,15 @@ class _HistorialDetailsState extends State<HistorialDetails> {
 
   @override
   void dispose() {
+    _cmdSubscription?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
+
     return Container(
       height: widget.height,
       width: widget.width / 0.8,
@@ -162,7 +204,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
             children: [
               /// Enter
               ElevatedButton(
-                onPressed: () => _printTicket(),
+                onPressed: () => cmdStream.cmdStreamSend.add('accept'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -175,12 +217,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
 
               /// Arriba
               ElevatedButton(
-                onPressed: () {
-                  if (_selectedIndex > 0) {
-                    _selectedIndex--;
-                    _updateItem();
-                  }
-                },
+                onPressed: () => cmdStream.cmdStreamSend.add('up'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -193,12 +230,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
 
               /// Abajo
               ElevatedButton(
-                onPressed: () {
-                  if (_selectedIndex < historial.length - 1) {
-                    _selectedIndex++;
-                    _updateItem();
-                  }
-                },
+                onPressed: () => cmdStream.cmdStreamSend.add('down'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),

@@ -1,8 +1,41 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-class AnimatedFuelTank extends StatefulWidget {
-  const AnimatedFuelTank({
+class SettingPage extends StatelessWidget {
+  const SettingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 550,
+              height: 450,
+              child: DemoTankAnimation(
+                fuelLevel: 0.5,
+                tankColor: Colors.blue,
+                isActive: true,
+              ),
+            ),
+            // SizedBox(height: 50),
+            // SizedBox(
+            //   width: 250,
+            //   height: 150,
+
+            //   child: CustomPaint(painter: MagazineHolderPainter()),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DemoTankAnimation extends StatefulWidget {
+  const DemoTankAnimation({
     super.key,
     required this.fuelLevel,
     required this.tankColor,
@@ -14,10 +47,10 @@ class AnimatedFuelTank extends StatefulWidget {
   final bool isActive;
 
   @override
-  State<AnimatedFuelTank> createState() => _DemoFuelTtateAnimation();
+  State<DemoTankAnimation> createState() => _DemoFuelTtateAnimation();
 }
 
-class _DemoFuelTtateAnimation extends State<AnimatedFuelTank>
+class _DemoFuelTtateAnimation extends State<DemoTankAnimation>
     with TickerProviderStateMixin {
   late final AnimationController _waveController;
 
@@ -447,5 +480,101 @@ class FuelTankPainter extends CustomPainter {
     return oldDelegate.fuelLevel != fuelLevel ||
         oldDelegate.waveValue != waveValue ||
         oldDelegate.tankColor != tankColor;
+  }
+}
+
+class MagazineHolderWidget extends StatelessWidget {
+  const MagazineHolderWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SizedBox(
+          width: 250,
+          height: 300,
+          child: CustomPaint(painter: MagazineHolderPainter()),
+        ),
+      ),
+    );
+  }
+}
+
+class MagazineHolderPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double width = size.width * 0.5;
+    final double height = size.height * 0.5;
+    final Color shapeColorLeft = Colors.green[400]!;
+
+    final shapePathLeft = Path();
+
+    shapePathLeft.moveTo(0, 0);
+
+    // Dibuja una línea hacia la esquina superior derecha
+    shapePathLeft.lineTo(width * 0.5, 0);
+
+    // Dibuja una línea hacia la esquina inferior derecha
+    shapePathLeft.lineTo(width * 0.5, height);
+
+    // Dibuja una línea hacia la esquina inferior izquierda
+    shapePathLeft.lineTo(0, height);
+
+    // Cierra la forma
+    shapePathLeft.close();
+
+    // Dibuja la forma con el color de relleno
+    final shapePaintLeft = Paint()
+      ..color = shapeColorLeft
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(shapePathLeft, shapePaintLeft);
+
+    // Dibuja el borde con un color más oscuro
+    final borderPaintLeft = Paint()
+      ..color = shapeColorLeft
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0;
+    canvas.drawPath(shapePathLeft, borderPaintLeft);
+
+    ///
+    ///
+    ///
+    ///
+    ///
+
+    final Color shapeColorRight = Colors.grey[400]!;
+    final shapePathRight = Path();
+
+    shapePathRight.moveTo(width * 0.5, 0);
+
+    // Dibuja una línea hacia la esquina superior derecha
+    shapePathRight.lineTo(width, 0);
+
+    // Dibuja una línea hacia la esquina inferior derecha
+    shapePathRight.lineTo(width, height);
+
+    // Dibuja una línea hacia la esquina inferior izquierda
+    shapePathRight.lineTo(width * 0.5, height);
+
+    // Cierra la forma
+    shapePathRight.close();
+
+    // Dibuja la forma con el color de relleno
+    final shapePaintRight = Paint()
+      ..color = shapeColorRight
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(shapePathRight, shapePaintRight);
+
+    // Dibuja el borde con un color más oscuro
+    final borderPaintRight = Paint()
+      ..color = shapeColorRight
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0;
+    canvas.drawPath(shapePathRight, borderPaintRight);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }

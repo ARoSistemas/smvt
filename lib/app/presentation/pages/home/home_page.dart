@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
   void goDetails({required ARoSizeScaler hw}) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => DetailsPage(hw: hw, tank: tanks[_selectedIndex]),
+        builder: (_) => DetailsPage(tank: tanks[_selectedIndex]),
       ),
     );
   }
@@ -119,7 +119,21 @@ class _HomePageState extends State<HomePage> {
         final alto = hw.pHeight(79);
 
         return Scaffold(
-          appBar: AppBar(title: const Text('ControlBIn - Tanques')),
+          appBar: AppBar(
+            title: const Text('ControlBIn - Tanques'),
+            // actions: [
+            //   IconButton(
+            //     icon: const Icon(Icons.settings),
+            //     onPressed: () {
+            //       Navigator.of(context).push(
+            //         MaterialPageRoute(
+            //           builder: (context) => const SettingPage(),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ],
+          ),
           backgroundColor: Colors.grey.shade100,
           body: Padding(
             padding: const EdgeInsets.only(left: 10, top: 10, right: 10),

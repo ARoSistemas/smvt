@@ -37,8 +37,8 @@ class TankDetails extends StatelessWidget {
         children: [
           /// Tank Animation
           SizedBox(
-            height: hw.height,
-            width: hw.pWidth(35),
+            height: hw.height * 0.8,
+            width: hw.pWidth(34),
             child: AnimatedFuelTank(
               fuelLevel: tank.percentage,
               tankColor: tank.scaleColor,

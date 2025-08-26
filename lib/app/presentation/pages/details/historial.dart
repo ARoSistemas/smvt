@@ -70,7 +70,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
 
   void _scrollToSelectedElement() {
     if (_scrollController.hasClients) {
-      final double itemHeight = 60.0;
+      final double itemHeight = 70.0;
       final double targetOffset = _selectedIndex * itemHeight;
       _scrollController.animateTo(
         targetOffset,
@@ -153,7 +153,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
               Text(
                 'Historial de Reportes',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold,
                   color: primaryColor,
                 ),
@@ -178,7 +178,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
                         title: Text(
                           '${historial[i].date} - ${historial[i].tipo}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 35,
                             fontWeight: FontWeight.bold,
                             color: historial[i].isSelected
                                 ? secondaryColor

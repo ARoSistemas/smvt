@@ -69,7 +69,7 @@ class _DescargaPageState extends State<DescargaPage> {
 
     return Container(
       height: widget.height,
-      width: widget.width / 1.2,
+      width: widget.width,
       color: secondaryColor,
       child: SingleChildScrollView(
         child: Column(
@@ -77,7 +77,7 @@ class _DescargaPageState extends State<DescargaPage> {
             Text(
               'Descarga de Combustible',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 40,
                 fontWeight: FontWeight.bold,
                 color: primaryColor,
               ),
@@ -87,15 +87,17 @@ class _DescargaPageState extends State<DescargaPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SizedBox(
-                  height: widget.height * 0.4,
-                  width: widget.width * 0.6,
+                  height: widget.height * 0.5,
+                  width: widget.width * 0.7,
                   child: Lottie.asset(
                     ARoAssets.animations('descarga'),
-                    fit: BoxFit.contain,
+                    fit: BoxFit.fitHeight,
                   ),
                 ),
 
-                /// Enter
+                ///
+                ///  Button software Enter
+                ///
                 ElevatedButton(
                   onPressed: () => cmdStream.cmdStreamSend.add('accept'),
                   style: ElevatedButton.styleFrom(

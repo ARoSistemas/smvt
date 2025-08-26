@@ -116,7 +116,7 @@ class _DetailsPageState extends State<DetailsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: secondaryColor,
-          content: DescargaPage(height: hw.pHeight(75), width: hw.pWidth(50)),
+          content: DescargaPage(height: hw.pHeight(75), width: hw.pWidth(40)),
         );
       },
     ).then((_) {
@@ -243,7 +243,6 @@ class _DetailsPageState extends State<DetailsPage> {
 
         if (cmd == 'findescarga') {
           // TODO: Aquí se maneja la respuesta de la búsqueda de descarga.
-          print('Respuesta de la búsqueda de descarga recibida');
         }
       });
     });
@@ -252,7 +251,7 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    // _initTimer();
+    _initTimer();
 
     _initStream();
   }
@@ -267,15 +266,11 @@ class _DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
 
-    print(hw.width);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         hw = ARoSizeScaler(
           size: Size(constraints.maxWidth, constraints.maxHeight),
         );
-
-        final alto = hw.pHeight(79);
 
         return Scaffold(
           appBar: AppBar(
@@ -286,283 +281,277 @@ class _DetailsPageState extends State<DetailsPage> {
           backgroundColor: Colors.grey.shade100,
           body: Padding(
             padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
+            child: Column(
+              children: [
+                SizedBox(height: 50),
+
+                /// Tank Details
+                Stack(
                   children: [
-                    Divider(color: Colors.transparent),
-
-                    /// Tank Details
-                    Stack(
-                      children: [
-                        /// Tank
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          child: SizedBox(
-                            width: hw.width,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 40),
-                                Container(
-                                  padding: EdgeInsets.all(20.0),
-                                  height: hw.pHeight(38),
-                                  width: hw.pWidth(43),
-                                  child: AnimatedFuelTank(
-                                    fuelLevel: widget.tank.percentage,
-                                    tankColor: widget.tank.scaleColor,
-                                    isActive: widget.tank.isActive,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        /// porcentaje
-                        Positioned(
-                          top: hw.height * 0.06,
-                          left: hw.width * 0.44,
-                          child: Text(
-                            '70 %',
-                            style: TextStyle(
-                              fontSize: hw.pText(7),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-
-                        /// Name Tank
-                        Positioned(
-                          top: -5,
-                          left: hw.width * 0.49,
-                          child: Text(
-                            widget.tank.nameTank,
-                            style: TextStyle(
-                              fontSize: hw.pText(2),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-
-                        /// Product
-                        Positioned(
-                          top: hw.height * 0.32,
-                          left: hw.width * 0.49,
-                          child: Text(
-                            widget.tank.product,
-                            style: TextStyle(
-                              fontSize: hw.pText(2),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                    /// Tank
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: SizedBox(
+                        width: hw.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            /// Centimetros
-                            Row(
-                              children: [
-                                ARoImage(
-                                  img: 'nivel',
-                                  type: 'png',
-                                  height: hw.pHeight(15),
-                                  fit: BoxFit.contain,
-                                ),
-                                SizedBox(width: 5),
-                                Column(
-                                  children: [
-                                    Text(
-                                      'Vacio: 30 cms',
-                                      style: TextStyle(
-                                        fontSize: hw.pText(2),
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Nivel: 70 cms',
-                                      style: TextStyle(
-                                        fontSize: hw.pText(2),
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            SizedBox(width: 40),
+                            Container(
+                              padding: EdgeInsets.all(20.0),
+                              height: hw.pHeight(38),
+                              width: hw.pWidth(43),
+                              child: AnimatedFuelTank(
+                                fuelLevel: widget.tank.percentage,
+                                tankColor: widget.tank.scaleColor,
+                                isActive: widget.tank.isActive,
+                              ),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
 
+                    /// porcentaje
+                    Positioned(
+                      top: hw.height * 0.06,
+                      left: hw.width * 0.47,
+                      child: Text(
+                        '70',
+                        style: TextStyle(
+                          fontSize: hw.pText(7),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: hw.height * 0.11,
+                      left: hw.width * 0.58,
+                      child: Text(
+                        '%',
+                        style: TextStyle(
+                          fontSize: hw.pText(4),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+
+                    ///
+                    /// Medidas del nivel
+                    ///
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// Centimetros
+                        Column(
+                          children: [
+                            Text(
+                              widget.tank.nameTank,
+                              style: TextStyle(
+                                fontSize: hw.pText(5),
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
+                              ),
+                            ),
                             SizedBox(
-                              height: hw.pHeight(40),
-                              width: hw.pWidth(50),
+                              height: hw.pHeight(5),
+                              width: hw.pWidth(5),
                             ),
+                            ARoImage(
+                              img: 'nivel',
+                              type: 'png',
+                              height: hw.pHeight(9),
+                              fit: BoxFit.contain,
+                            ),
+                            Text(
+                              'Vacio: 30 cms',
+                              style: TextStyle(
+                                fontSize: hw.pText(2),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              'Nivel: 70 cms',
+                              style: TextStyle(
+                                fontSize: hw.pText(2),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
 
-                            /// Litros
-                            Row(
-                              children: [
-                                ARoImage(
-                                  img: 'litros',
-                                  type: 'png',
-                                  height: hw.pHeight(15),
-                                  fit: BoxFit.contain,
-                                ),
-                                SizedBox(width: 15),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '3,000 Lts',
-                                      style: TextStyle(
-                                        fontSize: hw.pText(2),
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      '7,000 Lts',
-                                      style: TextStyle(
-                                        fontSize: hw.pText(2),
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                        SizedBox(height: hw.pHeight(40), width: hw.pWidth(60)),
+
+                        /// Litros
+                        Column(
+                          children: [
+                            Text(
+                              widget.tank.product,
+                              style: TextStyle(
+                                fontSize: hw.pText(5),
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
+                              ),
+                            ),
+                            SizedBox(
+                              height: hw.pHeight(5),
+                              width: hw.pWidth(5),
+                            ),
+                            ARoImage(
+                              img: 'litros',
+                              type: 'png',
+                              height: hw.pHeight(9),
+                              fit: BoxFit.contain,
+                            ),
+                            Text(
+                              '3,000 Lts',
+                              style: TextStyle(
+                                fontSize: hw.pText(2),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              '7,000 Lts',
+                              style: TextStyle(
+                                fontSize: hw.pText(2),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
+                  ],
+                ),
 
-                    Divider(color: Colors.transparent),
+                SizedBox(height: 60),
 
-                    /// Botones
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /// Print
-                        Container(
-                          padding: const EdgeInsets.all(25),
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 0
-                                ? Colors.blue.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedIndex == 0
-                                  ? Colors.blue.withValues(alpha: 0.5)
-                                  : Colors.transparent,
-                              width: 2,
+                /// Botones
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Print
+                    Container(
+                      padding: const EdgeInsets.all(25),
+                      decoration: BoxDecoration(
+                        color: _selectedIndex == 0
+                            ? Colors.blue.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _selectedIndex == 0
+                              ? Colors.blue.withValues(alpha: 0.5)
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ARoImage(
+                            img: 'print',
+                            type: 'png',
+                            height: hw.pHeight(15),
+                            fit: BoxFit.contain,
+                          ),
+                          Text(
+                            'Imprimir\nEstatus',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: hw.pText(2),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ARoImage(
-                                img: 'print',
-                                type: 'png',
-                                height: hw.pHeight(15),
-                                fit: BoxFit.contain,
-                              ),
-                              Text(
-                                'Imprimir\nEstatus',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: hw.pText(2),
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
+                      ),
+                    ),
 
-                        /// Reports
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 1
-                                ? Colors.blue.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedIndex == 1
-                                  ? Colors.blue.withValues(alpha: 0.5)
-                                  : Colors.transparent,
-                              width: 2,
+                    /// Reports
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: _selectedIndex == 1
+                            ? Colors.blue.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _selectedIndex == 1
+                              ? Colors.blue.withValues(alpha: 0.5)
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ARoImage(
+                            img: 'historial',
+                            type: 'png',
+                            height: hw.pHeight(15),
+                            fit: BoxFit.contain,
+                          ),
+                          Text(
+                            'ReImprimir\n ',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: hw.pText(2),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ARoImage(
-                                img: 'historial',
-                                type: 'png',
-                                height: hw.pHeight(15),
-                                fit: BoxFit.contain,
-                              ),
-                              Text(
-                                'ReImprimir\n ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: hw.pText(2),
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
+                      ),
+                    ),
 
-                        /// Iniciar descarga
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 2
-                                ? Colors.blue.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedIndex == 2
-                                  ? Colors.blue.withValues(alpha: 0.5)
-                                  : Colors.transparent,
-                              width: 2,
+                    /// Iniciar descarga
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: _selectedIndex == 2
+                            ? Colors.blue.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _selectedIndex == 2
+                              ? Colors.blue.withValues(alpha: 0.5)
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ARoImage(
+                            img: 'descarga',
+                            type: 'png',
+                            height: hw.pHeight(15),
+                            fit: BoxFit.contain,
+                          ),
+                          Text(
+                            'Iniciar\nDescarga',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: hw.pText(2),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ARoImage(
-                                img: 'descarga',
-                                type: 'png',
-                                height: hw.pHeight(15),
-                                fit: BoxFit.contain,
-                              ),
-                              Text(
-                                'Iniciar\nDescarga',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: hw.pText(2),
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,

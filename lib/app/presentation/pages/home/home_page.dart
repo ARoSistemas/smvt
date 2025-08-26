@@ -137,33 +137,30 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.grey.shade100,
           body: Padding(
             padding: const EdgeInsets.only(left: 10, top: 10, right: 10),
-            child: Center(
-              child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: alto / 2,
-                      child: TankDetails(
-                        tank: tanks[0],
-                        hw: ARoSizeScaler(
-                          size: Size(constraints.maxWidth, alto / 2),
-                        ),
-                      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 20),
+                SizedBox(
+                  height: alto / 2,
+                  child: TankDetails(
+                    tank: tanks[0],
+                    hw: ARoSizeScaler(
+                      size: Size(constraints.maxWidth, alto / 2),
                     ),
-                    SizedBox(
-                      height: alto / 2,
-                      child: TankDetails(
-                        tank: tanks[1],
-                        hw: ARoSizeScaler(
-                          size: Size(constraints.maxWidth, alto / 2),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(height: 20),
+                SizedBox(
+                  height: alto / 2,
+                  child: TankDetails(
+                    tank: tanks[1],
+                    hw: ARoSizeScaler(
+                      size: Size(constraints.maxWidth, alto / 2),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 

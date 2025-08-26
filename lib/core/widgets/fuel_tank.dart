@@ -185,24 +185,47 @@ class FuelTankPainter extends CustomPainter {
     pathRight.close();
   }
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    /// El cuerpo del canvas
-    final paint = Paint()
-      ..color = Colors.grey[400]!
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
+  // Método auxiliar para construir el path y evitar duplicación de código.
+  Path _buildPath(Size size) {
     final path = Path();
     path.moveTo(0, 0);
     path.lineTo(size.width, size.height * 0.1);
-
     path.arcToPoint(
       Offset(size.width, size.height / 1.25),
       radius: Radius.circular(size.height),
       clockwise: true,
     );
+    path.lineTo(size.width, size.height * 0.8);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
 
+  @override
+  void paint(Canvas canvas, Size size) {
+    ///
+    /// El cuerpo del canvas
+    ///
+
+    final pathBodyCylinder = _buildPath(size);
+    final mainPaint = Paint()
+      ..color = Colors.grey[400]!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+    canvas.drawPath(pathBodyCylinder, mainPaint);
+
+    final paint = Paint()
+      ..color = Colors.grey[400]!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+    final path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(size.width, size.height * 0.1);
+    path.arcToPoint(
+      Offset(size.width, size.height / 1.25),
+      radius: Radius.circular(size.height),
+      clockwise: true,
+    );
     path.lineTo(size.width, size.height * 0.8);
     path.lineTo(0, size.height);
     path.close();
@@ -214,15 +237,10 @@ class FuelTankPainter extends CustomPainter {
     final fuelPaint = Paint()
       ..color = tankColor
       ..style = PaintingStyle.fill;
-
     final tankPath = Path();
     tankPath.close();
-
     if (fuelLevel > 0.09) {
       final fuelPath = Path();
-      // final double fuelHeight = size.height * fuelLevel;
-
-      // final double yOffset = (size.height * 1.05) - (size.height * fuelLevel);
       final double minUp = size.height * (fuelLevel < 0.2 ? 0.08 : 1.05);
       final double minDown = fuelLevel - (fuelLevel < 0.2 ? 0.8 : -0.01);
 
@@ -244,11 +262,6 @@ class FuelTankPainter extends CustomPainter {
         fuelPath.lineTo(x, y);
       }
 
-      // Complete the path to fill the liquid shape.
-
-      // fuelPath.lineTo(size.width, size.height * fuelLevel);
-      // fuelPath.lineTo(size.width, size.height * (fuelLevel < 0.2 ? 0.8 : 0.8));
-
       fuelPath.arcToPoint(
         Offset(size.width, size.height / 1.25),
         radius: Radius.circular(size.height),
@@ -256,26 +269,19 @@ class FuelTankPainter extends CustomPainter {
       );
 
       fuelPath.lineTo(size.width, size.height * 0.8);
-
       fuelPath.lineTo(0, size.height);
-
       fuelPath.close();
-
-      // Draw the liquid.
       canvas.save();
-
-      // canvas.clipPath(tankPath);
       canvas.drawPath(fuelPath, fuelPaint);
       canvas.restore();
     }
 
-    /// Tapa inicial del cilindro
+    /// Cylinder Start
     final gradientFte = LinearGradient(
       colors: [Colors.grey.shade200, Colors.grey.shade800],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
-
     final colorTapaInicial = Paint()
       ..shader = gradientFte.createShader(
         Rect.fromLTWH(0, 0, size.width, size.height),
@@ -295,105 +301,121 @@ class FuelTankPainter extends CustomPainter {
     tapaInicial.close();
     canvas.drawPath(tapaInicial, colorTapaInicial);
 
-    /// El frente del cilindro
+    ///
+    /// Oval Front cylinder
+    ///
+    final List<Color> gradientColorsOval = [
+      Colors.grey[400]!,
+      Colors.grey[800]!,
+    ];
+
+    final gradientOval = LinearGradient(
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+      colors: gradientColorsOval,
+      stops: const [0.8, 1.0],
+    );
+
     final paintOval = Paint()
-      ..color = Colors.grey[400]!
+      ..shader = gradientOval.createShader(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+      )
       ..style = PaintingStyle.fill;
 
     final rect = Rect.fromLTWH(
-      -(size.width * 0.15),
+      -(size.width * 0.11),
       0,
-      size.width * 0.3,
+      size.width * 0.23,
       size.height,
     );
+
     canvas.drawOval(rect, paintOval);
 
     ///
-    /// Tapa final del cilindro
+    /// cylinder End
     ///
     final gradientFinal = LinearGradient(
       colors: [Colors.grey.shade200, Colors.grey.shade800],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
-
-    final colorTapaFinal = Paint()
+    final colorCilindroEnd = Paint()
       ..shader = gradientFinal.createShader(
-        Rect.fromLTWH(
-          0,
-          0,
-          size.width,
-          size.height,
-        ), // Define el área del degradado.
+        Rect.fromLTWH(0, 0, size.width, size.height),
       )
       ..style = PaintingStyle.fill
       ..strokeWidth = 4.0;
-
-    final tapaFinal = Path();
-    tapaFinal.moveTo(size.width * 0.90, size.height * 0.1);
-    tapaFinal.lineTo(size.width, size.height * 0.1);
-
-    tapaFinal.arcToPoint(
+    final cilindroEnd = Path();
+    cilindroEnd.moveTo(size.width * 0.90, size.height * 0.1);
+    cilindroEnd.lineTo(size.width, size.height * 0.1);
+    cilindroEnd.arcToPoint(
       Offset(size.width, size.height / 1.25),
       radius: Radius.circular(size.height),
       clockwise: true,
     );
-
-    tapaFinal.lineTo(size.width * 0.90, size.height * 0.82);
-    tapaFinal.arcToPoint(
+    cilindroEnd.lineTo(size.width * 0.90, size.height * 0.82);
+    cilindroEnd.arcToPoint(
       Offset(size.width * 0.9, size.height * 0.1),
       radius: Radius.circular(size.height),
       clockwise: false,
     );
-
-    tapaFinal.close();
-    canvas.drawPath(tapaFinal, colorTapaFinal);
+    cilindroEnd.close();
+    canvas.drawPath(cilindroEnd, colorCilindroEnd);
 
     ///
-    /// Las tapas de descarga
+    /// Primera tapa de descarga
     ///
-    // Definir los colores para el relleno y el contorno.
     final topCapPaint = Paint()
       ..color = isActive ? Colors.grey[400]! : Colors.grey
       ..style = PaintingStyle.fill;
-
     final topCapOutline = Paint()
-      ..color = isActive ? Colors.grey[400]! : Colors.grey
+      ..color = isActive ? Colors.grey[500]! : Colors.grey
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
-
-    // Primer elemento: en la parte izquierda del lienzo.
     final path1 = Path();
-    final centerOffset1 = Offset(size.width * 0.2, (size.height * 0.03) - 5);
-    const double scaleFactor1 = 0.2;
-
+    final centerOffset1 = Offset(size.width * 0.2, (size.height * 0.02) - 5);
+    const double scaleFactor1 = 0.25;
     _drawShape(canvas, path1, centerOffset1, scaleFactor1, size);
     canvas.drawPath(path1, topCapPaint);
     canvas.drawPath(path1, topCapOutline);
 
-    /// Segunda tapa
+    ///
+    /// Segunda tapa de descarga
+    ///
     final path2 = Path();
     final centerOffset2 = Offset(size.width * 0.85, (size.height * 0.1) - 5);
-    const double scaleFactor2 = 0.13;
+    const double scaleFactor2 = 0.11;
     _drawShape(canvas, path2, centerOffset2, scaleFactor2, size);
     canvas.drawPath(path2, topCapPaint);
     canvas.drawPath(path2, topCapOutline);
 
-    /// Primera base
+    ///
+    /// La Sombra del cilindro
+    ///
+    final Paint shadowPaint = Paint()
+      ..color = Colors.black38
+      ..style = PaintingStyle.fill;
+
+    final Path shadowPath = Path();
+    shadowPath.moveTo(-(size.width * 0.14), size.height * 1.03);
+    shadowPath.lineTo(size.width, size.height * 0.8);
+    shadowPath.lineTo(size.width * 1.1, size.height * 0.85);
+    shadowPath.lineTo(0, size.height * 1.1);
+    shadowPath.close();
+    canvas.drawPath(shadowPath, shadowPaint);
+
+    ///
+    /// Primera base del cilindro
+    ///
     final shapeBase1Left = Path();
     final Color shapeColorLeft1 = Colors.grey[700]!;
-
     final shapeBase1Right = Path();
     final Color shapeColor1Right = Colors.grey[400]!;
-
     final centerOffsetBase1 = Offset(size.width * 0.33, size.height * 0.99);
     const double scaleFactorBase1 = 0.2;
-
-    // Dibuja la forma con el color de relleno
     final shapePaintLeft1 = Paint()
       ..color = shapeColorLeft1
       ..style = PaintingStyle.fill;
-
     final shapePaintRight1 = Paint()
       ..color = shapeColor1Right
       ..style = PaintingStyle.fill;
@@ -410,21 +432,18 @@ class FuelTankPainter extends CustomPainter {
     canvas.drawPath(shapeBase1Left, shapePaintLeft1);
     canvas.drawPath(shapeBase1Right, shapePaintRight1);
 
-    /// Segunda base
+    ///
+    /// Segunda base del cilindro
+    ///
     final shapeBase2Left = Path();
     final Color shapeColorLeft2 = Colors.grey[700]!;
-
     final shapeBase2Right = Path();
     final Color shapeColorRight2 = Colors.grey[400]!;
-
-    final centerOffsetBase2 = Offset(size.width * 0.86, size.height * 0.87);
-    const double scaleFactorBase2 = 0.15;
-
-    // Dibuja la forma con el color de relleno
+    final centerOffsetBase2 = Offset(size.width * 0.86, size.height * 0.86);
+    const double scaleFactorBase2 = 0.12;
     final shapePaintLeft2 = Paint()
       ..color = shapeColorLeft2
       ..style = PaintingStyle.fill;
-
     final shapePaintRight2 = Paint()
       ..color = shapeColorRight2
       ..style = PaintingStyle.fill;
@@ -437,7 +456,6 @@ class FuelTankPainter extends CustomPainter {
       size,
       shapeBase2Right,
     );
-
     canvas.drawPath(shapeBase2Left, shapePaintLeft2);
     canvas.drawPath(shapeBase2Right, shapePaintRight2);
   }

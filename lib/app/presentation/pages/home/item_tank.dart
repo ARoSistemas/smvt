@@ -15,9 +15,9 @@ class TankDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sizeNameTank = hw.pText(5);
-    final sizeProduct = hw.pText(2);
-    final sizeLitros = hw.pText(1);
+    final sizeNameTank = hw.pText(6);
+    final sizeProduct = hw.pText(5);
+    final sizeLitros = hw.pText(4);
 
     return Container(
       decoration: BoxDecoration(
@@ -33,60 +33,66 @@ class TankDetails extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           /// Tank Animation
-          SizedBox(
-            height: hw.height * 0.8,
-            width: hw.pWidth(34),
-            child: AnimatedFuelTank(
-              fuelLevel: tank.percentage,
-              tankColor: tank.scaleColor,
-              isActive: tank.isActive,
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              height: hw.height * 0.75,
+              width: hw.pWidth(35),
+              child: AnimatedFuelTank(
+                fuelLevel: tank.percentage,
+                tankColor: tank.scaleColor,
+                isActive: tank.isActive,
+              ),
             ),
           ),
 
           /// Tank Details
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              /// Tank Name
-              Text(
-                tank.nameTank,
-                style: TextStyle(
-                  fontSize: sizeNameTank,
-                  fontWeight: FontWeight.bold,
-                  color: tank.isActive ? tank.scaleColor : Colors.grey,
+          SizedBox(
+            width: hw.pWidth(25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// Tank Name
+                Text(
+                  tank.nameTank,
+                  style: TextStyle(
+                    fontSize: sizeNameTank,
+                    fontWeight: FontWeight.bold,
+                    color: tank.isActive ? tank.scaleColor : Colors.grey,
+                  ),
                 ),
-              ),
 
-              /// Tank Product
-              Text(
-                tank.product,
-                style: TextStyle(
-                  fontSize: sizeProduct,
-                  fontWeight: FontWeight.bold,
-                  color: tank.isActive ? tank.scaleColor : Colors.grey,
+                /// Tank Product
+                Text(
+                  tank.product,
+                  style: TextStyle(
+                    fontSize: sizeProduct,
+                    fontWeight: FontWeight.bold,
+                    color: tank.isActive ? tank.scaleColor : Colors.grey,
+                  ),
                 ),
-              ),
 
-              /// Tank Litros
-              Text(
-                tank.liters,
-                style: TextStyle(
-                  fontSize: sizeLitros,
-                  fontWeight: FontWeight.bold,
-                  color: tank.isActive ? tank.scaleColor : Colors.grey,
+                /// Tank Litros
+                Text(
+                  tank.liters,
+                  style: TextStyle(
+                    fontSize: sizeLitros,
+                    fontWeight: FontWeight.bold,
+                    color: tank.isActive ? tank.scaleColor : Colors.grey,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           /// Fuel Gauge
           SizedBox(
             height: hw.pHeight(80),
-            width: hw.pWidth(20),
+            width: hw.pWidth(30),
             child: FuelGauge(
               percentage: tank.percentage,
               scaleColor: tank.scaleColor,

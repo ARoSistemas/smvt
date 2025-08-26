@@ -32,7 +32,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   int _selectedIndex = 0;
   int _counter = 0;
-  late Timer _timer;
+  // late Timer _timer;
 
   List<Reporte> historial = [
     Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
@@ -82,7 +82,7 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void _mnuHistorial() {
-    _timer.cancel();
+    // _timer.cancel();
     _counter = 0;
 
     showDialog(
@@ -107,7 +107,7 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void _mnuDescarga() {
-    _timer.cancel();
+    // _timer.cancel();
     _counter = 0;
 
     showDialog(
@@ -125,7 +125,7 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void _mnuPrinting() {
-    _timer.cancel();
+    // _timer.cancel();
     _counter = 0;
 
     if (!mounted) return;
@@ -134,7 +134,7 @@ class _DetailsPageState extends State<DetailsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: secondaryColor,
-          content: Printing(height: hw.pHeight(75), width: hw.pWidth(50)),
+          content: Printing(height: hw.pHeight(60), width: hw.pWidth(30)),
         );
       },
     ).then((_) {
@@ -192,15 +192,15 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void _initTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _counter++;
-      if (_counter == 30) {
-        if (mounted) {
-          _timer.cancel();
-          Navigator.pop(context);
-        }
-      }
-    });
+    // _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    //   _counter++;
+    //   if (_counter == 30) {
+    //     if (mounted) {
+    //       _timer.cancel();
+    //       Navigator.pop(context);
+    //     }
+    //   }
+    // });
   }
 
   void _initStream() {
@@ -265,10 +265,6 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
-
-    print(hw.width);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         hw = ARoSizeScaler(
@@ -307,8 +303,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                 SizedBox(width: 40),
                                 Container(
                                   padding: EdgeInsets.all(20.0),
-                                  height: hw.pHeight(38),
-                                  width: hw.pWidth(43),
+                                  height: hw.pHeight(45),
+                                  width: hw.pWidth(45),
                                   child: AnimatedFuelTank(
                                     fuelLevel: widget.tank.percentage,
                                     tankColor: widget.tank.scaleColor,
@@ -323,11 +319,24 @@ class _DetailsPageState extends State<DetailsPage> {
                         /// porcentaje
                         Positioned(
                           top: hw.height * 0.06,
-                          left: hw.width * 0.44,
+                          left: hw.width * 0.48,
                           child: Text(
-                            '70 %',
+                            '70',
                             style: TextStyle(
                               fontSize: hw.pText(7),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+
+                        Positioned(
+                          top: hw.height * 0.13,
+                          left: hw.width * 0.58,
+                          child: Text(
+                            '%',
+                            style: TextStyle(
+                              fontSize: hw.pText(4),
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
@@ -350,8 +359,8 @@ class _DetailsPageState extends State<DetailsPage> {
 
                         /// Product
                         Positioned(
-                          top: hw.height * 0.32,
-                          left: hw.width * 0.49,
+                          top: hw.height * 0.25,
+                          left: hw.width * 0.5,
                           child: Text(
                             widget.tank.product,
                             style: TextStyle(
@@ -449,19 +458,17 @@ class _DetailsPageState extends State<DetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         /// Print
-                        Container(
-                          padding: const EdgeInsets.all(25),
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 0
-                                ? Colors.blue.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedIndex == 0
-                                  ? Colors.blue.withValues(alpha: 0.5)
-                                  : Colors.transparent,
-                              width: 2,
+                        ElevatedButton(
+                          onPressed: () {
+                            _selectedIndex = 0;
+                            _selectMenu();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade100,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
+                            padding: const EdgeInsets.all(10),
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -469,14 +476,14 @@ class _DetailsPageState extends State<DetailsPage> {
                               ARoImage(
                                 img: 'print',
                                 type: 'png',
-                                height: hw.pHeight(15),
+                                height: hw.pHeight(10),
                                 fit: BoxFit.contain,
                               ),
                               Text(
                                 'Imprimir\nEstatus',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: hw.pText(2),
+                                  fontSize: hw.pText(1.5),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
@@ -486,19 +493,17 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
 
                         /// Reports
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 1
-                                ? Colors.blue.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedIndex == 1
-                                  ? Colors.blue.withValues(alpha: 0.5)
-                                  : Colors.transparent,
-                              width: 2,
+                        ElevatedButton(
+                          onPressed: () {
+                            _selectedIndex = 1;
+                            _selectMenu();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade100,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
+                            padding: const EdgeInsets.all(10),
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -506,14 +511,14 @@ class _DetailsPageState extends State<DetailsPage> {
                               ARoImage(
                                 img: 'historial',
                                 type: 'png',
-                                height: hw.pHeight(15),
+                                height: hw.pHeight(10),
                                 fit: BoxFit.contain,
                               ),
                               Text(
                                 'ReImprimir\n ',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: hw.pText(2),
+                                  fontSize: hw.pText(1.5),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
@@ -523,19 +528,17 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
 
                         /// Iniciar descarga
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 2
-                                ? Colors.blue.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedIndex == 2
-                                  ? Colors.blue.withValues(alpha: 0.5)
-                                  : Colors.transparent,
-                              width: 2,
+                        ElevatedButton(
+                          onPressed: () {
+                            _selectedIndex = 2;
+                            _selectMenu();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade100,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
+                            padding: const EdgeInsets.all(10),
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -543,14 +546,14 @@ class _DetailsPageState extends State<DetailsPage> {
                               ARoImage(
                                 img: 'descarga',
                                 type: 'png',
-                                height: hw.pHeight(15),
+                                height: hw.pHeight(10),
                                 fit: BoxFit.contain,
                               ),
                               Text(
                                 'Iniciar\nDescarga',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: hw.pText(2),
+                                  fontSize: hw.pText(1.5),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
@@ -565,40 +568,42 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
-          floatingActionButton: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              /// Aceptar
-              FloatingActionButton(
-                backgroundColor: secondaryColor,
-                heroTag: 'accept',
-                onPressed: () => cmdStream.cmdStreamSend.add('accept'),
-                child: const Icon(
-                  Icons.subdirectory_arrow_left,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(width: 50),
 
-              /// Izquierda
-              FloatingActionButton(
-                backgroundColor: secondaryColor,
-                heroTag: 'left',
-                onPressed: () => cmdStream.cmdStreamSend.add('left'),
-                child: const Icon(Icons.arrow_back, color: Colors.black),
-              ),
-              const SizedBox(width: 16),
+          // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
 
-              /// Derecha
-              FloatingActionButton(
-                backgroundColor: secondaryColor,
-                heroTag: 'down',
-                onPressed: () => cmdStream.cmdStreamSend.add('right'),
-                child: const Icon(Icons.arrow_forward, color: Colors.black),
-              ),
-            ],
-          ),
+          // floatingActionButton: Row(
+          //   mainAxisSize: MainAxisSize.min,
+          //   children: [
+          //     /// Aceptar
+          //     FloatingActionButton(
+          //       backgroundColor: secondaryColor,
+          //       heroTag: 'accept',
+          //       onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+          //       child: const Icon(
+          //         Icons.subdirectory_arrow_left,
+          //         color: Colors.black,
+          //       ),
+          //     ),
+          //     const SizedBox(width: 50),
+
+          //     /// Izquierda
+          //     FloatingActionButton(
+          //       backgroundColor: secondaryColor,
+          //       heroTag: 'left',
+          //       onPressed: () => cmdStream.cmdStreamSend.add('left'),
+          //       child: const Icon(Icons.arrow_back, color: Colors.black),
+          //     ),
+          //     const SizedBox(width: 16),
+
+          //     /// Derecha
+          //     FloatingActionButton(
+          //       backgroundColor: secondaryColor,
+          //       heroTag: 'down',
+          //       onPressed: () => cmdStream.cmdStreamSend.add('right'),
+          //       child: const Icon(Icons.arrow_forward, color: Colors.black),
+          //     ),
+          //   ],
+          // ),
         );
       },
     );

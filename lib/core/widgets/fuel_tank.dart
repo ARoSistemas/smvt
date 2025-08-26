@@ -296,16 +296,31 @@ class FuelTankPainter extends CustomPainter {
     canvas.drawPath(tapaInicial, colorTapaInicial);
 
     /// El frente del cilindro
+    final List<Color> gradientColorsOval = [
+      Colors.grey[400]!,
+      Colors.grey[800]!,
+    ];
+
+    final gradientOval = LinearGradient(
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+      colors: gradientColorsOval,
+      stops: const [0.8, 1.0],
+    );
+
     final paintOval = Paint()
-      ..color = Colors.grey[400]!
+      ..shader = gradientOval.createShader(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+      )
       ..style = PaintingStyle.fill;
 
     final rect = Rect.fromLTWH(
-      -(size.width * 0.15),
+      -(size.width * 0.11),
       0,
-      size.width * 0.3,
+      size.width * 0.23,
       size.height,
     );
+
     canvas.drawOval(rect, paintOval);
 
     ///

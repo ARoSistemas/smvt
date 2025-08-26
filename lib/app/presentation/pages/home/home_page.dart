@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'item_tank.dart';
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       percentage: 0.64,
       liters: '6,450 Lts',
       isActive: true,
-      isSelected: true,
+      isSelected: false,
       scaleColor: ProductColor.getColor('diesel'),
     ),
     Tank(
@@ -108,15 +109,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Se elimina esta linea del stream, solo la usan los botones de la UI
-    final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
     return LayoutBuilder(
       builder: (context, constraints) {
         hw = ARoSizeScaler(
           size: Size(constraints.maxWidth, constraints.maxHeight),
         );
 
-        final alto = hw.pHeight(79);
+        final alto = hw.pHeight(79) / 2.2;
 
         return Scaffold(
           appBar: AppBar(
@@ -137,69 +136,79 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.grey.shade100,
           body: Padding(
             padding: const EdgeInsets.only(left: 10, top: 10, right: 10),
-            child: Center(
-              child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: alto / 2,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      _selectedIndex = 0;
+                      goDetails(hw: hw);
+                    },
+                    child: SizedBox(
+                      height: alto,
                       child: TankDetails(
                         tank: tanks[0],
                         hw: ARoSizeScaler(
-                          size: Size(constraints.maxWidth, alto / 2),
+                          size: Size(constraints.maxWidth, alto),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: alto / 2,
+                  ),
+                  Divider(),
+                  GestureDetector(
+                    onTap: () {
+                      _selectedIndex = 1;
+                      goDetails(hw: hw);
+                    },
+                    child: SizedBox(
+                      height: alto,
                       child: TankDetails(
                         tank: tanks[1],
                         hw: ARoSizeScaler(
-                          size: Size(constraints.maxWidth, alto / 2),
+                          size: Size(constraints.maxWidth, alto),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
 
           // TODO: Eliminar este snippet de los botones de la UI,
           // TODO: Estas acciones seran recibidas por puerto serial.
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.miniEndFloat,
-          floatingActionButton: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              /// Aceptar
-              FloatingActionButton(
-                heroTag: 'accept',
-                onPressed: () => cmdStream.cmdStreamSend.add('accept'),
-                child: const Icon(Icons.subdirectory_arrow_left),
-              ),
-              const SizedBox(height: 50),
+          // floatingActionButtonLocation:
+          //     FloatingActionButtonLocation.miniEndFloat,
+          // floatingActionButton: Column(
+          //   mainAxisSize: MainAxisSize.min,
+          //   children: [
+          /// Aceptar
+          // FloatingActionButton(
+          //   heroTag: 'accept',
+          //   onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+          //   child: const Icon(Icons.subdirectory_arrow_left),
+          // ),
+          // const SizedBox(height: 50),
 
-              /// Arriba
-              FloatingActionButton(
-                heroTag: 'up',
-                onPressed: () => cmdStream.cmdStreamSend.add('up'),
-                child: const Icon(Icons.arrow_upward),
-              ),
-              const SizedBox(height: 16),
+          // /// Arriba
+          // FloatingActionButton(
+          //   heroTag: 'up',
+          //   onPressed: () => cmdStream.cmdStreamSend.add('up'),
+          //   child: const Icon(Icons.arrow_upward),
+          // ),
+          // const SizedBox(height: 16),
 
-              /// Abajo
-              FloatingActionButton(
-                heroTag: 'down',
-                onPressed: () => cmdStream.cmdStreamSend.add('down'),
-                child: const Icon(Icons.arrow_downward),
-              ),
+          // /// Abajo
+          // FloatingActionButton(
+          //   heroTag: 'down',
+          //   onPressed: () => cmdStream.cmdStreamSend.add('down'),
+          //   child: const Icon(Icons.arrow_downward),
+          // ),
 
-              // TODO: Eliminar hasta aqui.
-            ],
-          ),
+          // TODO: Eliminar hasta aqui.
+          //   ],
+          // ),
         );
       },
     );

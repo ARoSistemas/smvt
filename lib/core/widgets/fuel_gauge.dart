@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
 
 class FuelGauge extends StatefulWidget {
   final double percentage;
@@ -63,7 +63,7 @@ class _FuelGaugeState extends State<FuelGauge>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) {
+      builder: (_, child) {
         return CustomPaint(
           painter: _FuelGaugePainter(
             percentage: _animation.value,
@@ -176,7 +176,7 @@ class _FuelGaugePainter extends CustomPainter {
       text: TextSpan(
         text: 'E',
         style: TextStyle(
-          fontSize: halfWidth * 0.1,
+          fontSize: halfWidth * 0.2,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
@@ -194,7 +194,7 @@ class _FuelGaugePainter extends CustomPainter {
       text: TextSpan(
         text: 'F',
         style: TextStyle(
-          fontSize: halfWidth * 0.1,
+          fontSize: halfWidth * 0.2,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),

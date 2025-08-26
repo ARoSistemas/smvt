@@ -69,7 +69,7 @@ class _DescargaPageState extends State<DescargaPage> {
 
     return Container(
       height: widget.height,
-      width: widget.width / 1.2,
+      width: widget.width / 1.4,
       color: secondaryColor,
       child: SingleChildScrollView(
         child: Column(
@@ -82,42 +82,23 @@ class _DescargaPageState extends State<DescargaPage> {
                 color: primaryColor,
               ),
             ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  height: widget.height * 0.4,
-                  width: widget.width * 0.6,
-                  child: Lottie.asset(
-                    ARoAssets.animations('descarga'),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-
-                /// Enter
-                ElevatedButton(
-                  onPressed: () => cmdStream.cmdStreamSend.add('accept'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: const EdgeInsets.all(20),
-                  ),
-                  child: const Icon(Icons.subdirectory_arrow_left),
-                ),
-              ],
+            SizedBox(
+              height: widget.height * 0.4,
+              width: widget.width * 0.6,
+              child: Lottie.asset(
+                ARoAssets.animations('descarga'),
+                fit: BoxFit.contain,
+              ),
             ),
 
-            Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.blue.withValues(alpha: 0.5),
-                  width: 2,
+            ElevatedButton(
+              onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade100,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
+                padding: const EdgeInsets.all(20),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -125,7 +106,7 @@ class _DescargaPageState extends State<DescargaPage> {
                   ARoImage(
                     img: 'termino',
                     type: 'png',
-                    height: widget.height * 0.2,
+                    height: widget.height * 0.15,
                     fit: BoxFit.contain,
                   ),
                   SizedBox(height: 10),

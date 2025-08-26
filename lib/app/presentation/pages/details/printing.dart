@@ -42,9 +42,10 @@ class _PrintingState extends State<Printing> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Imprimiendo...',
+            'Imprimiendo',
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 50,
+              fontSize: 40,
               fontWeight: FontWeight.bold,
               color: primaryColor,
             ),

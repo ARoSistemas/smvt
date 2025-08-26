@@ -50,7 +50,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
       e.isSelected = false;
     }
 
-    historial[_selectedIndex].isSelected = true;
+    // historial[_selectedIndex].isSelected = true;
     _counter = 0;
     setState(() {});
     _scrollToSelectedElement();
@@ -122,7 +122,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
       if (mounted) {
         if (historial.isNotEmpty) {
           _updateItem();
-          _initStream();
+          // _initStream();
         }
       }
     });
@@ -143,103 +143,61 @@ class _HistorialDetailsState extends State<HistorialDetails> {
 
     return Container(
       height: widget.height,
-      width: widget.width / 0.8,
+      width: widget.width,
       color: secondaryColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
         children: [
-          Column(
-            children: [
-              Text(
-                'Historial de Reportes',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
-              ),
-              SizedBox(
-                height: widget.height / 1.21,
-                width: widget.width,
-                child: ListView.builder(
-                  itemCount: historial.length,
-                  controller: _scrollController,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, i) {
-                    return Container(
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: widget.historial[i].isSelected
-                            ? primaryColor
-                            : Colors.grey.shade300,
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          '${historial[i].date} - ${historial[i].tipo}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: historial[i].isSelected
-                                ? secondaryColor
-                                : Colors.black,
-                          ),
-                        ),
-                        trailing: Icon(
-                          historial[i].isSelected
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
+          Text(
+            'Historial de Reportes',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: primaryColor,
+            ),
+          ),
+          SizedBox(
+            height: widget.height / 1.21,
+            width: widget.width * 0.9,
+            child: ListView.builder(
+              itemCount: historial.length,
+              controller: _scrollController,
+              itemBuilder: (context, i) {
+                return GestureDetector(
+                  onTap: () {
+                    _printTicket();
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: widget.historial[i].isSelected
+                          ? primaryColor
+                          : Colors.grey.shade400,
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        '${historial[i].date} - ${historial[i].tipo}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           color: historial[i].isSelected
                               ? secondaryColor
-                              : Colors.grey.shade100,
+                              : Colors.black,
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              /// Enter
-              ElevatedButton(
-                onPressed: () => cmdStream.cmdStreamSend.add('accept'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                      trailing: Icon(
+                        historial[i].isSelected
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
+                        color: historial[i].isSelected
+                            ? secondaryColor
+                            : Colors.grey.shade100,
+                      ),
+                    ),
                   ),
-                  padding: const EdgeInsets.all(20),
-                ),
-                child: const Icon(Icons.subdirectory_arrow_left),
-              ),
-              const SizedBox(height: 50),
-
-              /// Arriba
-              ElevatedButton(
-                onPressed: () => cmdStream.cmdStreamSend.add('up'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  padding: const EdgeInsets.all(20),
-                ),
-                child: const Icon(Icons.arrow_upward),
-              ),
-              const SizedBox(height: 20),
-
-              /// Abajo
-              ElevatedButton(
-                onPressed: () => cmdStream.cmdStreamSend.add('down'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  padding: const EdgeInsets.all(20),
-                ),
-                child: const Icon(Icons.arrow_downward),
-              ),
-            ],
+                );
+              },
+            ),
           ),
         ],
       ),

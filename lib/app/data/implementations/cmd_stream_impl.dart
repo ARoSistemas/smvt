@@ -5,31 +5,16 @@ import '../../domain/repositories/cmd_stream_repository.dart';
 import '../../../core/utils/serial_manager.dart';
 
 class CmdStreamImpl implements CmdStreamRepository {
+  ///
   /// Permite enviar datos al stream para pruebas sin puerto serial
+  ///
   final StreamController<String> _stream = StreamController<String>.broadcast();
   late final StreamSubscription<String> serialSubscription;
   late final SerialManager _serialManager;
+  String _portName = 'COM100';
 
-  /// Constructor de la clase
-  CmdStreamImpl({required String portName}) {
-    // TODO: Descomentar este snippet cuando se tenga la conexión al puerto serial
-    // Inicializa y escucha el SerialManager
-    // _serialManager = SerialManager();
-
-    // _serialManager.initializeAndListen(portName: portName);
-
-    // serialSubscription = _serialManager.commandsStream.listen(
-    //   (event) {
-    //     _stream.add(event);
-    //   },
-    //   onError: (error) {
-    //     _stream.add('ERROR: $error');
-    //   },
-    //   onDone: () {
-    //     _stream.add('Serial stream closed');
-    //   },
-    // );
-  }
+  @override
+  String get portName => _portName;
 
   @override
   Stream<String> get cmdStreamListen => _stream.stream;
@@ -40,5 +25,31 @@ class CmdStreamImpl implements CmdStreamRepository {
   @override
   void send(String data) {
     _serialManager.writeToPort(data);
+  }
+
+  @override
+  void updatePort(String newPortName) {
+    _portName = newPortName;
+    // Aquí se puede reiniciar la conexión o realizar otras acciones necesarias
+  }
+
+  @override
+  void init() {
+    // Inicializa y escucha el SerialManager
+    _serialManager = SerialManager();
+
+    _serialManager.initializeAndListen(portName: portName);
+
+    serialSubscription = _serialManager.commandsStream.listen(
+      (event) {
+        _stream.add(event);
+      },
+      onError: (error) {
+        _stream.add('ERROR: $error');
+      },
+      onDone: () {
+        _stream.add('Serial stream closed');
+      },
+    );
   }
 }

@@ -274,8 +274,14 @@ class _DetailsPageState extends State<DetailsPage> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(
-              'ControlBIn - ${widget.tank.nameTank} ${widget.tank.product}  ',
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'ControlBIn - ${widget.tank.nameTank} ${widget.tank.product}',
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ),
           backgroundColor: Colors.grey.shade100,

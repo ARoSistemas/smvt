@@ -7,6 +7,15 @@ abstract class CmdStreamRepository {
   /// StreamSink para enviar datos por el stream
   StreamSink<String> get cmdStreamSend;
 
+  /// Nombre del puerto serial
+  String get portName;
+
   /// Envía datos al puerto serial
   void send(String data);
+
+  /// Inicializa el repositorio
+  void init();
+
+  /// Actualiza el nombre del puerto serial
+  void updatePort(String newPortName);
 }

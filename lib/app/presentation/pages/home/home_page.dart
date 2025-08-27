@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'item_tank.dart';
@@ -120,7 +121,15 @@ class _HomePageState extends State<HomePage> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('ControlBIn - Tanques'),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'ControlBIn - Tanques',
+                  style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             // actions: [
             //   IconButton(
             //     icon: const Icon(Icons.settings),
@@ -141,6 +150,8 @@ class _HomePageState extends State<HomePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(height: 20),
+
+                /// Tanque 1
                 SizedBox(
                   height: alto / 2,
                   child: TankDetails(
@@ -151,6 +162,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(height: 20),
+
+                /// Tanque 2
                 SizedBox(
                   height: alto / 2,
                   child: TankDetails(
@@ -193,10 +206,9 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () => cmdStream.cmdStreamSend.add('down'),
                 child: const Icon(Icons.arrow_downward),
               ),
-
-              // TODO: Eliminar hasta aqui.
             ],
           ),
+          // TODO: Eliminar hasta aqui.
         );
       },
     );

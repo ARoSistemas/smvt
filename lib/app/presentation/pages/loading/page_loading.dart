@@ -42,6 +42,14 @@ class _LoadingPageState extends State<LoadingPage> {
       _init();
     });
 
+    //   // Simulación de llamada a la API para obtener el nombre del puerto
+    // final configData = await _fetchConfigData();
+    // final String newPortName = configData['portName'] ?? 'COM3';
+
+    // // Actualizar el puerto en CmdStreamImpl
+    // final cmdStream = Provider.of<CmdStreamImpl>(context, listen: false);
+    // cmdStream.updatePort(newPortName);
+
     if (!mounted) return;
     Navigator.of(context).pop();
     Navigator.of(context).push(

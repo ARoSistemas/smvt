@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +11,11 @@ import 'historial.dart';
 import '../../../config/themes/themedata.dart';
 
 import '../../../domain/entities/models/tank.dart';
-import '../../../domain/entities/models/reports.dart';
+import '../../../domain/entities/models/ticket.dart';
+import '../../../domain/entities/models/lectura.dart';
+
 import '../../../domain/repositories/cmd_stream_repository.dart';
+import '../../../domain/repositories/repository_auth.dart';
 
 import '../../../../core/widgets/fuel_tank.dart';
 import '../../../../core/utils/aro_size_scaler.dart';
@@ -32,45 +36,33 @@ class _DetailsPageState extends State<DetailsPage> {
 
   int _selectedIndex = 0;
   int _counter = 0;
+  final tmpTicket = Ticket.empty();
   late Timer _timer;
 
-  List<Reporte> historial = [
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
-    Reporte(date: '2025-08-01 00:15', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 01:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 03:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 12:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
-    Reporte(date: '2025-08-01 00:15', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 01:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 03:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 12:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
-    Reporte(date: '2025-08-01 00:15', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 01:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 03:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 12:00', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Descarga', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-    Reporte(date: '2025-08-01 10:10', tipo: 'Estatus', isSelected: false),
-  ];
+  ///
+  ///
+  ///   Borrar este snipper
+  ///
+  ///
+
+  /// Devuelve un número entero aleatorio entre 1 y 298, ambos inclusive.
+  int getRandomNumber() {
+    final random = Random();
+    final randomNumber = random.nextInt(298);
+    return randomNumber + 1;
+  }
+
+  ///
+  ///
+  ///
+  ///
+  ///
 
   void _selectMenu() {
     switch (_selectedIndex) {
       case 0:
-        _mnuPrinting();
+        _fetchNivel(true);
+        // _mnuPrinting(holdOn: false);
         break;
       case 1:
         _mnuHistorial();
@@ -94,14 +86,13 @@ class _DetailsPageState extends State<DetailsPage> {
           content: HistorialDetails(
             height: hw.pHeight(75),
             width: hw.pWidth(50),
-            historial: historial,
           ),
         );
       },
     ).then((isPrinting) {
       _initTimer();
       if (isPrinting == true) {
-        _mnuPrinting();
+        _mnuPrinting(holdOn: false);
       }
     });
   }
@@ -124,61 +115,95 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
-  void _mnuPrinting() {
-    _timer.cancel();
-    _counter = 0;
+  Future<String> _prepareTicket(int nivel, bool tipo) async {
+    /// Se recibe el nivel actual del vacio del tanque en centímetros
+    /// Se obtiene la capacidad del tanque en centimetros
+    final authImpl = Provider.of<AuthRepository>(context, listen: false);
+    final capacidadTanqueCms = authImpl.capacidadTanqueCms();
 
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: secondaryColor,
-          content: Printing(height: hw.pHeight(75), width: hw.pWidth(50)),
-        );
-      },
-    ).then((_) {
-      _initTimer();
-    });
+    /// Se calcula el nivel real en centimetros
+    final nivelRealCms = capacidadTanqueCms - nivel;
 
+    /// busco en la tabla el nivel en litros
+    final Lectura lectura = await authImpl.fetchDataNivel(nivelRealCms);
+
+    final uuid = authImpl.getUuid();
+
+    final ticket = lectura.copyWith(
+      uuid: uuid,
+      date: DateTime.now().toString().substring(0, 19),
+      tipo: tipo ? 0 : 1,
+    );
+
+    // final Ticket ticket = Ticket(
+    //   uuid: uuid,
+    //   date: date,
+    //   empresa: empresa,
+    //   direccion: direccion,
+    //   titulo: titulo,
+    //   producto: producto,
+    //   cmVacioInit: cmVacioInit,
+    //   cmNivelInit: cmNivelInit,
+    //   percentageVacioInit: percentageVacioInit,
+    //   percentageNivelInit: percentageNivelInit,
+    //   ltsPorLlenarInit: ltsPorLlenarInit,
+    //   ltsActualesInit: ltsActualesInit,
+    //   cmVacioEnd: cmVacioEnd,
+    //   cmNivelEnd: cmNivelEnd,
+    //   percentageVacioEnd: percentageVacioEnd,
+    //   percentageNivelEnd: percentageNivelEnd,
+    //   ltsPorLlenarEnd: ltsPorLlenarEnd,
+    //   ltsActualesEnd: ltsActualesEnd,
+    //   tipoTicket: tipoTicket,
+    //   isSelected: isSelected,
+    // );
+
+    /// Se envia la lectura al api para que la guarde en la base de datos
+    /// Se espera respuesta del API, para enviar a guardar localmente
+
+    ///
+    print(ticket.toRaw());
+    return r'elTicket';
+  }
+
+  void _fetchNivel(bool tipo) async {
+    /// Se muestra animación de impresión
+    _mnuPrinting(holdOn: true);
+
+    // /// Se píde el nivel actual al CBIn
     // final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
     // cmdStream.send('getstatus');
 
-    // /// Espera la respuesta por máximo 10 segundos
+    // /// Espera la respuesta por máximo 20 segundos
     // final completer = Completer<String>();
+    // int elNivel = 0;
+
     // late StreamSubscription sub;
     // sub = cmdStream.cmdStreamListen.listen((response) {
-    //   /// falta la respuesta
-    //   if (response == 'status_ok') {
-    //     completer.complete(response);
-    //     sub.cancel();
+    //   completer.complete(response);
+    //   sub.cancel();
+
+    //   if (response != '0') {
+    //     elNivel = int.tryParse(response) ?? 0;
     //   }
     // });
 
     // completer.future
-    //     .timeout(Duration(seconds: 10))
-    //     .then((_) {
+    //     .timeout(Duration(seconds: 20))
+    //     .then((_) async {
     //       ///
     //       /// Teniendo el nivel actual se prepara la info y se manda
     //       /// por puerto serial para ser impresa.
     //       ///
-    //       cmdStream.send('se manda el json del ticket');
 
-    //       if (!mounted) return;
-    //       showDialog(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return AlertDialog(
-    //             backgroundColor: secondaryColor,
-    //             content: Printing(
-    //               height: hw.pHeight(75),
-    //               width: hw.pWidth(50),
-    //             ),
-    //           );
-    //         },
-    //       ).then((_) {
-    //         _initTimer();
-    //       });
+    //       /// obtener el ticket en raw
+    //       // final String ticket = _prepareTicket(elNivel);
+    // final ticket = await _prepareTicket(getRandomNumber());
+    await _prepareTicket(getRandomNumber(), tipo);
+
+    //       cmdStream.send(ticket);
+
+    //       /// Se cierra la animación de impresión
     //     })
     //     .catchError((_) {
     //       sub.cancel();
@@ -189,6 +214,31 @@ class _DetailsPageState extends State<DetailsPage> {
     //         ),
     //       );
     //     });
+
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
+
+  void _mnuPrinting({required bool holdOn}) {
+    _timer.cancel();
+    _counter = 0;
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: secondaryColor,
+          content: Printing(
+            height: hw.pHeight(75),
+            width: hw.pWidth(50),
+            holdOn: holdOn,
+          ),
+        );
+      },
+    ).then((_) {
+      _initTimer();
+    });
   }
 
   void _initTimer() {
@@ -252,7 +302,6 @@ class _DetailsPageState extends State<DetailsPage> {
   void initState() {
     super.initState();
     _initTimer();
-
     _initStream();
   }
 
@@ -289,7 +338,7 @@ class _DetailsPageState extends State<DetailsPage> {
             padding: const EdgeInsets.only(left: 10, right: 10),
             child: Column(
               children: [
-                SizedBox(height: 50),
+                SizedBox(height: 40),
 
                 /// Tank Details
                 Stack(
@@ -299,20 +348,18 @@ class _DetailsPageState extends State<DetailsPage> {
                       top: 0,
                       left: 0,
                       child: SizedBox(
+                        height: hw.pHeight(37),
                         width: hw.width,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(width: 40),
-                            Container(
-                              padding: EdgeInsets.all(20.0),
-                              height: hw.pHeight(38),
-                              width: hw.pWidth(43),
-                              child: AnimatedFuelTank(
-                                fuelLevel: widget.tank.percentage,
-                                tankColor: widget.tank.scaleColor,
-                                isActive: widget.tank.isActive,
-                              ),
+                            AnimatedFuelTank(
+                              fuelLevel: widget.tank.percentage,
+                              tankColor: widget.tank.scaleColor,
+                              isActive: widget.tank.isActive,
+                              height: hw.pHeight(33),
+                              width: hw.pWidth(40),
                             ),
                           ],
                         ),

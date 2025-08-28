@@ -45,6 +45,8 @@ class TankDetails extends StatelessWidget {
                 fuelLevel: tank.percentage,
                 tankColor: tank.scaleColor,
                 isActive: tank.isActive,
+                height: hw.height * 0.75,
+                width: hw.pWidth(35),
               ),
             ),
           ),

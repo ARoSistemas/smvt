@@ -73,14 +73,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
-  create_project_aro:
-    dependency: "direct dev"
-    description:
-      name: create_project_aro
-      sha256: bfd90d7c8e25ad40d0c11450d397cf0d3dd3aec3f549eaf253cc1b9a61d793c5
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.7"
   crypto:
     dependency: transitive
     description:
@@ -726,7 +718,7 @@ packages:
     source: hosted
     version: "1.4.0"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       sha256: a5be9ef6618a7ac1e964353ef476418026db906c4facdedaa299b7a2e71690ff
@@ -791,4 +783,4 @@ packages:
     version: "6.6.1"
 sdks:
   dart: ">=3.8.1 <4.0.0"
-  flutter: ">=3.32.0"
+  flutter: ">=3.29.0"

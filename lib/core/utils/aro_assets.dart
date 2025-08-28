@@ -34,6 +34,7 @@ class ARoAssets {
       'printing': 'assets/animations/printing.json',
       'offline': 'assets/animations/offline.json',
       'logout': 'assets/animations/logout.json',
+      'warning': 'assets/animations/warning.json',
     };
     return map[asset] ?? 'assets/animations/nofound.json';
   }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:smvt/app/presentation/pages/home/home_page.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/utils/utils_transitions.dart';
 import '../../../config/constans/cfg_my_enums.dart';
+import '../../../config/themes/themedata.dart';
+import '../../../domain/repositories/repository_auth.dart';
+import '../home/home_page.dart';
 
 class LoadingPage extends StatefulWidget {
   /// A page that shows a loading screen and performs initialization tasks.
@@ -38,15 +41,31 @@ class _LoadingPageState extends State<LoadingPage> {
   ///
 
   Future<void> _init() async {
-    await Future.delayed(const Duration(seconds: 3), () {
-      _init();
-    });
+    final auth = Provider.of<AuthRepository>(context, listen: false);
+    final count = await auth.fetchTotalNiveles();
 
-    //   // Simulación de llamada a la API para obtener el nombre del puerto
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: primaryColor,
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$count Niveles ',
+              style: TextStyle(fontSize: 30, color: Colors.white),
+            ),
+          ],
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+
+    /// Simulación de llamada a la API para obtener el nombre del puerto
     // final configData = await _fetchConfigData();
     // final String newPortName = configData['portName'] ?? 'COM3';
 
-    // // Actualizar el puerto en CmdStreamImpl
+    /// Actualizar el puerto en CmdStreamImpl
     // final cmdStream = Provider.of<CmdStreamImpl>(context, listen: false);
     // cmdStream.updatePort(newPortName);
 

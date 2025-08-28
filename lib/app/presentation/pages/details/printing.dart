@@ -7,10 +7,16 @@ import '../../../config/themes/themedata.dart';
 import '../../../../core/utils/aro_assets.dart';
 
 class Printing extends StatefulWidget {
-  const Printing({super.key, required this.height, required this.width});
+  const Printing({
+    super.key,
+    required this.height,
+    required this.width,
+    required this.holdOn,
+  });
 
   final double height;
   final double width;
+  final bool holdOn;
 
   @override
   State<Printing> createState() => _PrintingState();
@@ -22,13 +28,20 @@ class _PrintingState extends State<Printing> {
   @override
   void initState() {
     super.initState();
-
-    _timer = Timer(Duration(seconds: 4), () {
+    _timer = Timer(Duration(seconds: widget.holdOn ? 25 : 4), () {
       if (mounted) {
         Navigator.of(context).pop();
       }
       _timer.cancel();
     });
+  }
+
+  @override
+  void dispose() {
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
+    super.dispose();
   }
 
   @override

@@ -41,4 +41,9 @@ class UserPref {
   /// Dirección de la empresa
   String get direccion => _userPref.getString('direccion') ?? '';
   set direccion(String value) => _userPref.setString('direccion', value);
+
+  /// Capacidad del tanque en centimetros
+  int get capacidadTanqueCms => _userPref.getInt('capacidadTanqueCms') ?? 300;
+  set capacidadTanqueCms(int value) =>
+      _userPref.setInt('capacidadTanqueCms', value);
 }

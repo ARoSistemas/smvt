@@ -3,21 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lottie/lottie.dart';
+
 import '../../../config/themes/themedata.dart';
-import '../../../domain/entities/models/reports.dart';
+import '../../../domain/entities/models/ticket.dart';
 import '../../../domain/repositories/cmd_stream_repository.dart';
+
+import '../../../../core/utils/aro_assets.dart';
 
 class HistorialDetails extends StatefulWidget {
   const HistorialDetails({
     super.key,
     required this.height,
     required this.width,
-    required this.historial,
   });
 
   final double height;
   final double width;
-  final List<Reporte> historial;
 
   @override
   State<HistorialDetails> createState() => _HistorialDetailsState();
@@ -25,11 +27,9 @@ class HistorialDetails extends StatefulWidget {
 
 class _HistorialDetailsState extends State<HistorialDetails> {
   final ScrollController _scrollController = ScrollController();
+  List<Ticket> historial = [];
   StreamSubscription<String>? _cmdSubscription;
-
   int _selectedIndex = 0;
-
-  List<Reporte> historial = [];
   int _counter = 0;
   late Timer _timer;
 
@@ -56,18 +56,6 @@ class _HistorialDetailsState extends State<HistorialDetails> {
     _scrollToSelectedElement();
   }
 
-  void _initTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _counter++;
-      if (_counter == 30) {
-        if (mounted) {
-          _timer.cancel();
-          Navigator.pop(context);
-        }
-      }
-    });
-  }
-
   void _scrollToSelectedElement() {
     if (_scrollController.hasClients) {
       final double itemHeight = 70.0;
@@ -81,53 +69,63 @@ class _HistorialDetailsState extends State<HistorialDetails> {
   }
 
   void _initStream() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cmdStream = Provider.of<CmdStreamRepository>(
-        context,
-        listen: false,
-      );
-      _cmdSubscription = cmdStream.cmdStreamListen.listen((cmd) {
-        if (!mounted) return;
-        if (ModalRoute.of(context)?.isCurrent == true) {
-          switch (cmd) {
-            case 'up':
-              if (_selectedIndex > 0) {
-                _selectedIndex--;
-                _updateItem();
-              }
-              break;
-            case 'down':
-              if (_selectedIndex < historial.length - 1) {
-                _selectedIndex++;
-                _updateItem();
-              }
-              break;
-            case 'accept':
-              _printTicket();
-              break;
+    final cmdStream = Provider.of<CmdStreamRepository>(context, listen: false);
+    _cmdSubscription = cmdStream.cmdStreamListen.listen((cmd) {
+      if (!mounted) return;
 
-            default:
-          }
+      if (ModalRoute.of(context)?.isCurrent == true) {
+        switch (cmd) {
+          case 'up':
+            if (_selectedIndex > 0) {
+              _selectedIndex--;
+              _updateItem();
+            }
+            break;
+          case 'down':
+            if (_selectedIndex < historial.length - 1) {
+              _selectedIndex++;
+              _updateItem();
+            }
+            break;
+          case 'accept':
+            if (historial.isEmpty) {
+              if (mounted) {
+                _timer.cancel();
+                Navigator.pop(context, false);
+              }
+            } else {
+              _printTicket();
+            }
+            break;
+
+          default:
         }
-      });
+      }
     });
+  }
+
+  void _initTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _counter++;
+      if (_counter == 30) {
+        if (mounted) {
+          _timer.cancel();
+          Navigator.pop(context);
+        }
+      }
+    });
+  }
+
+  void _loadData() {
+    // leer los datos del db y actualizar
   }
 
   @override
   void initState() {
     super.initState();
-    historial = widget.historial;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        if (historial.isNotEmpty) {
-          _updateItem();
-          _initStream();
-        }
-      }
-    });
-
+    _initStream();
     _initTimer();
+    _loadData();
   }
 
   @override
@@ -145,104 +143,155 @@ class _HistorialDetailsState extends State<HistorialDetails> {
       height: widget.height,
       width: widget.width / 0.8,
       color: secondaryColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Column(
-            children: [
-              Text(
-                'Historial de Reportes',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
-              ),
-              SizedBox(
-                height: widget.height / 1.21,
-                width: widget.width,
-                child: ListView.builder(
-                  itemCount: historial.length,
-                  controller: _scrollController,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, i) {
-                    return Container(
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: widget.historial[i].isSelected
-                            ? primaryColor
-                            : Colors.grey.shade300,
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          '${historial[i].date} - ${historial[i].tipo}',
-                          style: TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.bold,
-                            color: historial[i].isSelected
-                                ? secondaryColor
-                                : Colors.black,
-                          ),
-                        ),
-                        trailing: Icon(
-                          historial[i].isSelected
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
-                          color: historial[i].isSelected
-                              ? secondaryColor
-                              : Colors.grey.shade100,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              /// Enter
-              ElevatedButton(
-                onPressed: () => cmdStream.cmdStreamSend.add('accept'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+      child: historial.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: widget.height * 0.5,
+                    width: widget.width * 0.7,
+                    child: Lottie.asset(
+                      ARoAssets.animations('warning'),
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
-                  padding: const EdgeInsets.all(20),
-                ),
-                child: const Icon(Icons.subdirectory_arrow_left),
-              ),
-              const SizedBox(height: 50),
+                  Text(
+                    'No hay reportes para mostrar',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
+                  ),
+                  SizedBox(height: 30),
 
-              /// Arriba
-              ElevatedButton(
-                onPressed: () => cmdStream.cmdStreamSend.add('up'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  /// Enter
+                  Container(
+                    padding: const EdgeInsets.all(25),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.blue.withValues(alpha: 0.5),
+                        width: 2,
+                      ),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.all(20),
+                      ),
+                      child: const Icon(
+                        Icons.subdirectory_arrow_left,
+                        size: 60,
+                      ),
+                    ),
                   ),
-                  padding: const EdgeInsets.all(20),
-                ),
-                child: const Icon(Icons.arrow_upward),
+                ],
               ),
-              const SizedBox(height: 20),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      'Historial de Reportes',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
+                    ),
+                    SizedBox(
+                      height: widget.height / 1.21,
+                      width: widget.width,
+                      child: ListView.builder(
+                        itemCount: historial.length,
+                        controller: _scrollController,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, i) {
+                          return Container(
+                            margin: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: historial[i].isSelected
+                                  ? primaryColor
+                                  : Colors.grey.shade300,
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                '${historial[i].date} - ${historial[i].titulo}',
+                                style: TextStyle(
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.bold,
+                                  color: historial[i].isSelected
+                                      ? secondaryColor
+                                      : Colors.black,
+                                ),
+                              ),
+                              trailing: Icon(
+                                historial[i].isSelected
+                                    ? Icons.check_circle
+                                    : Icons.circle_outlined,
+                                color: historial[i].isSelected
+                                    ? secondaryColor
+                                    : Colors.grey.shade100,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    /// Enter
+                    ElevatedButton(
+                      onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.all(20),
+                      ),
+                      child: const Icon(Icons.subdirectory_arrow_left),
+                    ),
+                    const SizedBox(height: 50),
 
-              /// Abajo
-              ElevatedButton(
-                onPressed: () => cmdStream.cmdStreamSend.add('down'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  padding: const EdgeInsets.all(20),
+                    /// Arriba
+                    ElevatedButton(
+                      onPressed: () => cmdStream.cmdStreamSend.add('up'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.all(20),
+                      ),
+                      child: const Icon(Icons.arrow_upward),
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Abajo
+                    ElevatedButton(
+                      onPressed: () => cmdStream.cmdStreamSend.add('down'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.all(20),
+                      ),
+                      child: const Icon(Icons.arrow_downward),
+                    ),
+                  ],
                 ),
-                child: const Icon(Icons.arrow_downward),
-              ),
-            ],
-          ),
-        ],
-      ),
+              ],
+            ),
     );
   }
 }

@@ -130,18 +130,20 @@ class _HistorialDetailsState extends State<HistorialDetails> {
 
     /// Se obtiene el historial de tickets
     final fetch = await authImpl.fetchLastTickets();
-    historial = fetch.map((ticket) {
-      return ticket.copyWith(
-        customer: customer,
-        address: address,
-        title: ticket.typeTicket == 0
-            ? TicketType.inventory.type
-            : TicketType.reception.type,
-      );
-    }).toList();
+    if (fetch.isNotEmpty) {
+      historial = fetch.map((ticket) {
+        return ticket.copyWith(
+          customer: customer,
+          address: address,
+          title: ticket.typeTicket == 0
+              ? TicketType.inventory.type
+              : TicketType.reception.type,
+        );
+      }).toList();
 
-    historial[0].isSelected = true;
-    setState(() {});
+      historial[0].isSelected = true;
+      setState(() {});
+    }
 
     return;
   }

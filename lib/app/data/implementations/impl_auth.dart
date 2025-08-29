@@ -1,11 +1,13 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sqflite/sqflite.dart';
 
-import '../../domain/entities/models/empresa.dart';
-import '../../domain/entities/models/lectura.dart';
-import '../../domain/repositories/repository_auth.dart';
 import '../datasources/local/db_sqflite.dart';
 import '../datasources/local/dts_user_pref.dart';
+
+import '../../domain/entities/models/mdl_empresa.dart';
+import '../../domain/entities/models/mdl_lectura.dart';
+
+import '../../domain/repositories/repository_auth.dart';
 
 class AuthImp implements AuthRepository {
   final UserPref _userPref;
@@ -21,23 +23,28 @@ class AuthImp implements AuthRepository {
 
   @override
   Future<bool> get isSignedIn async {
-    return _userPref.empresa.isNotEmpty;
+    return _userPref.customer.isNotEmpty;
   }
 
   @override
-  void saveEmpresa(String empresa, String direccion) {
-    _userPref.empresa = empresa;
-    _userPref.direccion = direccion;
+  void saveCustomer(String name, String address) {
+    _userPref.customer = name;
+    _userPref.address = address;
   }
 
   @override
-  Future<Empresa> getEmpresa() async {
-    return Empresa(nombre: _userPref.empresa, direccion: _userPref.direccion);
+  Customer fetchCustomer() {
+    return Customer(name: _userPref.customer, address: _userPref.address);
   }
 
   @override
-  int capacidadTanqueCms() {
+  int capacityTankCms() {
     return _userPref.capacidadTanqueCms;
+  }
+
+  @override
+  int capacityTankLiters() {
+    return _userPref.capacidadTanqueLitros;
   }
 
   @override

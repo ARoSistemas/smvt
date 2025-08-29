@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../config/themes/themedata.dart';
 
@@ -24,6 +26,28 @@ class DescargaPage extends StatefulWidget {
 class _DescargaPageState extends State<DescargaPage> {
   StreamSubscription<String>? _cmdSubscription;
 
+  ///
+  ///
+  ///   Borrar este snipper
+  ///
+  ///
+
+  /// Devuelve un número entero aleatorio entre 1 y 298, ambos inclusive.
+  int getRandomNumber(bool isInit) {
+    final random = Random();
+    final randomNumber = isInit
+        ? random.nextInt(198)
+        : random.nextInt(100) + 198;
+
+    return randomNumber + 1;
+  }
+
+  ///
+  ///
+  ///
+  ///
+  ///
+
   void _initStream() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cmdStream = Provider.of<CmdStreamRepository>(
@@ -33,15 +57,15 @@ class _DescargaPageState extends State<DescargaPage> {
       _cmdSubscription = cmdStream.cmdStreamListen.listen((cmd) {
         if (!mounted) return;
         if (ModalRoute.of(context)?.isCurrent == true) {
-          switch (cmd) {
-            case 'accept':
+          /// Se continua con el proceso de descarga
+          if (cmd.contains('accept')) {
+            print('🌭 Se simula la lectura del tanque');
+            cmdStream.cmdStreamSend.add(
+              jsonEncode({'level': getRandomNumber(true)}),
+            );
 
-              /// Se continua con el proceso de descarga
-              cmdStream.cmdStreamSend.add('findescarga');
-              Navigator.of(context).pop();
-              break;
-
-            default:
+            cmdStream.cmdStreamSend.add('findescarga');
+            Navigator.of(context).pop();
           }
         }
       });
@@ -75,9 +99,9 @@ class _DescargaPageState extends State<DescargaPage> {
         child: Column(
           children: [
             Text(
-              'Descarga de Combustible',
+              '¿Terminar descarga?',
               style: TextStyle(
-                fontSize: 40,
+                fontSize: 35,
                 fontWeight: FontWeight.bold,
                 color: primaryColor,
               ),

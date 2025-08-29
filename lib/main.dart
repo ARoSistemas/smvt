@@ -49,15 +49,6 @@ Future<void> main() async {
   /// Inicializo el repositorio de autenticación
   AuthImp authImp = AuthImp(userPrefs, dataDbf, uuid);
 
-  final int fetchTotal = await authImp.fetchTotalNiveles();
-
-  if (fetchTotal <= 0) {
-    // print('⭐ No hay datos en la tabla Niveles, insertando...');
-    await authImp.insertNiveles();
-  } else {
-    // print('⭐ Total de registros en la tabla Niveles: $fetchTotal');
-  }
-
   /// Create Cliente http instance
   Client client = Client();
 

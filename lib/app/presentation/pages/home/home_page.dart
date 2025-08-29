@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'item_tank.dart';
 import '../details/details_page.dart';
 
-import '../../../domain/entities/models/tank.dart';
+import '../../../domain/entities/models/mdl_tank.dart';
 import '../../../domain/repositories/cmd_stream_repository.dart';
 
 import '../../../../core/utils/aro_size_scaler.dart';
@@ -35,19 +35,23 @@ class _HomePageState extends State<HomePage> {
         if (ModalRoute.of(context)?.isCurrent == true) {
           switch (cmd) {
             case 'up':
-              if (tanks[1].isSelected) {
-                tanks[0].isSelected = true;
-                tanks[1].isSelected = false;
-                _selectedIndex = 0;
-                setState(() {});
+              if (tanks[0].isActive && tanks[1].isActive) {
+                if (tanks[1].isSelected) {
+                  tanks[0].isSelected = true;
+                  tanks[1].isSelected = false;
+                  _selectedIndex = 0;
+                  setState(() {});
+                }
               }
               break;
             case 'down':
-              if (tanks[0].isSelected) {
-                tanks[0].isSelected = false;
-                tanks[1].isSelected = true;
-                _selectedIndex = 1;
-                setState(() {});
+              if (tanks[0].isActive && tanks[1].isActive) {
+                if (tanks[0].isSelected) {
+                  tanks[0].isSelected = false;
+                  tanks[1].isSelected = true;
+                  _selectedIndex = 1;
+                  setState(() {});
+                }
               }
               break;
             case 'accept':
@@ -88,12 +92,12 @@ class _HomePageState extends State<HomePage> {
     ),
     Tank(
       nameTank: 'Tank2',
-      product: 'Magna',
-      capacityCms: 100.00,
-      currentLevelCms: 45.00,
-      percentage: 0.45,
-      liters: '4,500 Lts',
-      isActive: true,
+      product: '-',
+      capacityCms: 300.00,
+      currentLevelCms: 0.00,
+      percentage: 0.0,
+      liters: '0 Lts',
+      isActive: false,
       isSelected: false,
       scaleColor: ProductColor.getColor('magna'),
     ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Lectura {
   Lectura({
     required this.uuid,
@@ -55,7 +57,15 @@ class Lectura {
     isSend: isSend ?? this.isSend,
   );
 
-  String toRaw() {
-    return '{uuid:$uuid},{date:$date},{tipo:$tipo},{cms:$cms},{cubic:$cubic},{liters:$liters},{isSend:$isSend}';
+  String toJson() {
+    return jsonEncode({
+      'uuid': uuid,
+      'date': date,
+      'tipo': tipo,
+      'cms': cms,
+      'cubic': cubic,
+      'liters': liters,
+      'isSend': isSend,
+    });
   }
 }

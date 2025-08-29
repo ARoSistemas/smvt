@@ -35,15 +35,21 @@ class UserPref {
   set tkMovil(String value) => _userPref.setString('tkMovil', value);
 
   /// Nombre de la empresa
-  String get empresa => _userPref.getString('empresa') ?? '';
-  set empresa(String value) => _userPref.setString('empresa', value);
+  String get customer => _userPref.getString('customer') ?? '';
+  set customer(String value) => _userPref.setString('customer', value);
 
   /// Dirección de la empresa
-  String get direccion => _userPref.getString('direccion') ?? '';
-  set direccion(String value) => _userPref.setString('direccion', value);
+  String get address => _userPref.getString('address') ?? '';
+  set address(String value) => _userPref.setString('address', value);
 
   /// Capacidad del tanque en centimetros
-  int get capacidadTanqueCms => _userPref.getInt('capacidadTanqueCms') ?? 300;
+  int get capacidadTanqueCms => _userPref.getInt('capacidadTanqueCms') ?? 299;
   set capacidadTanqueCms(int value) =>
       _userPref.setInt('capacidadTanqueCms', value);
+
+  /// Capacidad del tanque en litros
+  int get capacidadTanqueLitros =>
+      _userPref.getInt('capacidadTanqueLitros') ?? 45558;
+  set capacidadTanqueLitros(int value) =>
+      _userPref.setInt('capacidadTanqueLitros', value);
 }

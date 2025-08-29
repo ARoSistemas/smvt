@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/models/tank.dart';
+import '../../../domain/entities/models/mdl_tank.dart';
 
 import '../../../../core/widgets/fuel_gauge.dart';
 import '../../../../core/widgets/fuel_tank.dart';
@@ -96,8 +96,8 @@ class TankDetails extends StatelessWidget {
             height: hw.pHeight(80),
             width: hw.pWidth(30),
             child: FuelGauge(
-              percentage: tank.percentage,
-              scaleColor: tank.scaleColor,
+              percentage: tank.isActive ? tank.percentage : 0,
+              scaleColor: tank.isActive ? tank.scaleColor : Colors.grey,
             ),
           ),
         ],

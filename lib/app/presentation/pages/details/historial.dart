@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../config/themes/themedata.dart';
-import '../../../domain/entities/models/ticket.dart';
+import '../../../domain/entities/models/mdl_ticket.dart';
 import '../../../domain/repositories/cmd_stream_repository.dart';
 
 import '../../../../core/utils/aro_assets.dart';
@@ -225,7 +225,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
                             ),
                             child: ListTile(
                               title: Text(
-                                '${historial[i].date} - ${historial[i].titulo}',
+                                '${historial[i].date} - ${historial[i].title}',
                                 style: TextStyle(
                                   fontSize: 35,
                                   fontWeight: FontWeight.bold,

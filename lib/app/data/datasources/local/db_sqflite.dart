@@ -7,7 +7,7 @@ import 'package:path/path.dart' as ruta;
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../domain/entities/models/lectura.dart';
+import '../../../domain/entities/models/mdl_lectura.dart';
 
 class DbSQfLite {
   static Database? _database;

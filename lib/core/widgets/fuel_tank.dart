@@ -45,24 +45,24 @@ class _FuelTankAnimation extends State<AnimatedFuelTank>
     return Stack(
       children: [
         /// las ondas
-        SizedBox(
-          height: widget.height,
-          width: widget.width,
-
-          child: AnimatedBuilder(
-            animation: _waveController,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: OndasWater(
-                  fuelLevel: widget.fuelLevel,
-                  waveValue: _waveController.value,
-                  tankColor: widget.tankColor,
-                  isActive: widget.isActive,
-                ),
-              );
-            },
+        if (widget.isActive)
+          SizedBox(
+            height: widget.height,
+            width: widget.width,
+            child: AnimatedBuilder(
+              animation: _waveController,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: OndasWater(
+                    fuelLevel: widget.fuelLevel,
+                    waveValue: _waveController.value,
+                    tankColor: widget.tankColor,
+                    isActive: widget.isActive,
+                  ),
+                );
+              },
+            ),
           ),
-        ),
 
         /// El tanque
         SizedBox(
@@ -87,8 +87,8 @@ class FuelTankPainter extends CustomPainter {
   void _drawCylinderBody(Canvas canvas, Size size) {
     final pathBodyCylinder = _buildPath(size);
     final mainPaint = Paint()
-      ..color = Colors.grey[400]!
-      ..style = PaintingStyle.stroke
+      ..color = isActive ? Colors.grey[400]! : Colors.grey[300]!
+      ..style = isActive ? PaintingStyle.stroke : PaintingStyle.fill
       ..strokeWidth = 2.0;
     canvas.drawPath(pathBodyCylinder, mainPaint);
 

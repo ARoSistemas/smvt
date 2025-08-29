@@ -11,7 +11,7 @@ abstract class CmdStreamRepository {
   String get portName;
 
   /// Envía datos al puerto serial
-  void send(String data);
+  void sendToPort(String data);
 
   /// Inicializa el repositorio
   void init();

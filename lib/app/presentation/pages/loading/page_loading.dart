@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../home/home_page.dart';
+import '../../providers/general_provider.dart';
 
 import '../../../config/constans/cfg_my_enums.dart';
-import '../../../config/themes/themedata.dart';
 
 import '../../../domain/repositories/repository_auth.dart';
 
@@ -28,32 +28,30 @@ class _LoadingPageState extends State<LoadingPage> {
     // cmdStream.updatePort(newPortName);
 
     final authImpl = Provider.of<AuthRepository>(context, listen: false);
-    final count = await authImpl.fetchTotalNiveles();
+    int count = await authImpl.fetchTotalNiveles();
 
+    /// Se carga la tabla de las equivalencias de los niveles a cm y metros
     if (count <= 0) {
-      // print('⭐ No hay datos en la tabla Niveles, insertando...');
       await authImpl.insertNiveles();
       authImpl.saveCustomer('Estacion demo', 'Dirección demo');
-    } else {
-      // print('⭐ Total de registros en la tabla Niveles: $fetchTotal');
+      count = await authImpl.fetchTotalNiveles();
     }
 
+    /// Cargo en el estado
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: primaryColor,
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Capacidad $count cms',
-              style: TextStyle(fontSize: 30, color: Colors.white),
-            ),
-          ],
-        ),
-        duration: const Duration(seconds: 3),
-      ),
-    );
+
+    /// Datos de los niveles cargados
+    final provider = Provider.of<GeneralProvider>(context, listen: false);
+    provider.niveles = count.toString();
+
+    /// Datos de la empresa
+    final customer = authImpl.fetchCustomer();
+    provider.empresa = customer.name;
+    provider.direccion = customer.address;
+
+    /// Se obtiene la capacidad del tanque en centimetros
+    provider.capacityTankCms = authImpl.capacityTankCms();
+    provider.capacityTankLiters = authImpl.capacityTankLiters();
 
     if (!mounted) return;
     Navigator.of(context).pop();

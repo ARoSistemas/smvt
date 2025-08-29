@@ -22,6 +22,7 @@ class Ticket {
     required this.ltsCurrentEnd,
     required this.typeTicket,
     required this.isSelected,
+    required this.isSend,
   });
 
   /// Encabezado del ticket
@@ -49,11 +50,14 @@ class Ticket {
   String ltsToFillEnd; // litros por llenar final
   String ltsCurrentEnd; // litros Current final
 
-  /// Tipo de ticket: Status | Carga
-  String typeTicket; // Tipo de ticket
+  /// Tipo de ticket: Inventario | Carga
+  int typeTicket; // Tipo de ticket
 
   /// Solo para la lista del historial
   bool isSelected; // Indica si el ticket está seleccionado en la lista
+
+  /// Flag para verificar si esta arriba el registro
+  int isSend;
 
   factory Ticket.fromRaw(String str) => Ticket.fromMap(json.decode(str));
 
@@ -64,20 +68,21 @@ class Ticket {
     address: map['address'] ?? '',
     title: map['title'] ?? '',
     product: map['product'] ?? '',
-    cmVacuumInit: map['cmVacuumInit'] ?? '',
-    cmVolumeInit: map['cmVolumeInit'] ?? '',
+    cmVacuumInit: (map['cmVacuumInit'] ?? 0).toString(),
+    cmVolumeInit: (map['cmVolumeInit'] ?? 0).toString(),
     percentageVacuumInit: map['percentageVacuumInit'] ?? '',
     percentageVolumeInit: map['percentageVolumeInit'] ?? '',
-    ltsToFillInit: map['ltsToFillInit'] ?? '',
-    ltsCurrentInit: map['ltsCurrentInit'] ?? '',
-    cmVacuumEnd: map['cmVacuumEnd'] ?? '',
-    cmVolumeEnd: map['cmVolumeEnd'] ?? '',
+    ltsToFillInit: (map['ltsToFillInit'] ?? 0).toString(),
+    ltsCurrentInit: (map['ltsCurrentInit'] ?? '').toString(),
+    cmVacuumEnd: (map['cmVacuumEnd'] ?? 0).toString(),
+    cmVolumeEnd: (map['cmVolumeEnd'] ?? 0).toString(),
     percentageVacuumEnd: map['percentageVacuumEnd'] ?? '',
     percentageVolumeEnd: map['percentageVolumeEnd'] ?? '',
-    ltsToFillEnd: map['ltsToFillEnd'] ?? '',
-    ltsCurrentEnd: map['ltsCurrentEnd'] ?? '',
-    typeTicket: map['typeTicket'] ?? '',
+    ltsToFillEnd: (map['ltsToFillEnd'] ?? 0).toString(),
+    ltsCurrentEnd: (map['ltsCurrentEnd'] ?? 0).toString(),
+    typeTicket: int.parse(map['typeTicket'] ?? '0'),
     isSelected: map['isSelected'] ?? false,
+    isSend: map['isSend'] ?? 0,
   );
 
   factory Ticket.empty() {
@@ -100,8 +105,9 @@ class Ticket {
       percentageVolumeEnd: '',
       ltsToFillEnd: '',
       ltsCurrentEnd: '',
-      typeTicket: '',
+      typeTicket: 0,
       isSelected: false,
+      isSend: 0,
     );
   }
 
@@ -124,8 +130,9 @@ class Ticket {
     String? percentageVolumeEnd,
     String? ltsToFillEnd,
     String? ltsCurrentEnd,
-    String? typeTicket,
+    int? typeTicket,
     bool? isSelected,
+    int? isSend,
   }) => Ticket(
     uuid: uuid ?? this.uuid,
     date: date ?? this.date,
@@ -147,6 +154,7 @@ class Ticket {
     ltsCurrentEnd: ltsCurrentEnd ?? this.ltsCurrentEnd,
     typeTicket: typeTicket ?? this.typeTicket,
     isSelected: isSelected ?? this.isSelected,
+    isSend: isSend ?? this.isSend,
   );
 
   String toJson() => jsonEncode({
@@ -171,5 +179,32 @@ class Ticket {
     'ltsCurrentEnd': ltsCurrentEnd,
     'typeTicket': typeTicket,
     'isSelected': isSelected,
+    'isSend': isSend,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'uuid': uuid,
+      'date': date,
+      'customer': customer,
+      'address': address,
+      'title': title,
+      'product': product,
+      'cmVacuumInit': cmVacuumInit,
+      'cmVolumeInit': cmVolumeInit,
+      'percentageVacuumInit': percentageVacuumInit,
+      'percentageVolumeInit': percentageVolumeInit,
+      'ltsToFillInit': ltsToFillInit,
+      'ltsCurrentInit': ltsCurrentInit,
+      'cmVacuumEnd': cmVacuumEnd,
+      'cmVolumeEnd': cmVolumeEnd,
+      'percentageVacuumEnd': percentageVacuumEnd,
+      'percentageVolumeEnd': percentageVolumeEnd,
+      'ltsToFillEnd': ltsToFillEnd,
+      'ltsCurrentEnd': ltsCurrentEnd,
+      'typeTicket': typeTicket,
+      'isSelected': isSelected,
+      'isSend': isSend,
+    };
+  }
 }

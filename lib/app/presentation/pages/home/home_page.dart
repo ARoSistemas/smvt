@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smvt/app/presentation/providers/general_provider.dart';
 
 import 'item_tank.dart';
 import '../details/details_page.dart';
@@ -33,32 +35,36 @@ class _HomePageState extends State<HomePage> {
       _cmdSubscription = cmdStream.cmdStreamListen.listen((cmd) {
         if (!mounted) return;
         if (ModalRoute.of(context)?.isCurrent == true) {
-          switch (cmd) {
-            case 'up':
-              if (tanks[0].isActive && tanks[1].isActive) {
-                if (tanks[1].isSelected) {
-                  tanks[0].isSelected = true;
-                  tanks[1].isSelected = false;
-                  _selectedIndex = 0;
-                  setState(() {});
-                }
+          /// Mover arriba
+          if (cmd.contains('up') && _selectedIndex > 0) {
+            if (tanks[0].isActive && tanks[1].isActive) {
+              if (tanks[1].isSelected) {
+                tanks[0].isSelected = true;
+                tanks[1].isSelected = false;
+                _selectedIndex = 0;
+                setState(() {});
               }
-              break;
-            case 'down':
-              if (tanks[0].isActive && tanks[1].isActive) {
-                if (tanks[0].isSelected) {
-                  tanks[0].isSelected = false;
-                  tanks[1].isSelected = true;
-                  _selectedIndex = 1;
-                  setState(() {});
-                }
-              }
-              break;
-            case 'accept':
-              goDetails(hw: hw);
-              break;
-            default:
+            }
           }
+
+          /// Mover abajo
+          if (cmd.contains('down') && _selectedIndex < tanks.length - 1) {
+            if (tanks[0].isActive && tanks[1].isActive) {
+              if (tanks[0].isSelected) {
+                tanks[0].isSelected = false;
+                tanks[1].isSelected = true;
+                _selectedIndex = 1;
+                setState(() {});
+              }
+            }
+          }
+
+          /// Aceptar e imprimir
+          if (cmd.contains('accept')) {
+            goDetails(hw: hw);
+          }
+
+          ///
         }
       });
     });
@@ -134,50 +140,44 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            // actions: [
-            //   IconButton(
-            //     icon: const Icon(Icons.settings),
-            //     onPressed: () {
-            //       Navigator.of(context).push(
-            //         MaterialPageRoute(
-            //           builder: (context) => const SettingPage(),
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ],
+            actions: [
+              Text(context.read<GeneralProvider>().niveles),
+              SizedBox(width: 20),
+            ],
           ),
           backgroundColor: Colors.grey.shade100,
           body: Padding(
             padding: const EdgeInsets.only(left: 10, top: 10, right: 10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 20),
 
-                /// Tanque 1
-                SizedBox(
-                  height: alto / 2,
-                  child: TankDetails(
-                    tank: tanks[0],
-                    hw: ARoSizeScaler(
-                      size: Size(constraints.maxWidth, alto / 2),
+                  /// Tanque 1
+                  SizedBox(
+                    height: alto / 2,
+                    child: TankDetails(
+                      tank: tanks[0],
+                      hw: ARoSizeScaler(
+                        size: Size(constraints.maxWidth, alto / 2),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                /// Tanque 2
-                SizedBox(
-                  height: alto / 2,
-                  child: TankDetails(
-                    tank: tanks[1],
-                    hw: ARoSizeScaler(
-                      size: Size(constraints.maxWidth, alto / 2),
+                  /// Tanque 2
+                  SizedBox(
+                    height: alto / 2,
+                    child: TankDetails(
+                      tank: tanks[1],
+                      hw: ARoSizeScaler(
+                        size: Size(constraints.maxWidth, alto / 2),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
@@ -191,7 +191,8 @@ class _HomePageState extends State<HomePage> {
               /// Aceptar
               FloatingActionButton(
                 heroTag: 'accept',
-                onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+                onPressed: () =>
+                    cmdStream.cmdStreamSend.add(jsonEncode({'cmd': 'accept'})),
                 child: const Icon(Icons.subdirectory_arrow_left),
               ),
               const SizedBox(height: 50),
@@ -199,7 +200,8 @@ class _HomePageState extends State<HomePage> {
               /// Arriba
               FloatingActionButton(
                 heroTag: 'up',
-                onPressed: () => cmdStream.cmdStreamSend.add('up'),
+                onPressed: () =>
+                    cmdStream.cmdStreamSend.add(jsonEncode({'cmd': 'up'})),
                 child: const Icon(Icons.arrow_upward),
               ),
               const SizedBox(height: 16),
@@ -207,7 +209,8 @@ class _HomePageState extends State<HomePage> {
               /// Abajo
               FloatingActionButton(
                 heroTag: 'down',
-                onPressed: () => cmdStream.cmdStreamSend.add('down'),
+                onPressed: () =>
+                    cmdStream.cmdStreamSend.add(jsonEncode({'cmd': 'down'})),
                 child: const Icon(Icons.arrow_downward),
               ),
             ],
@@ -216,5 +219,9 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+
+    ///
   }
+
+  ///
 }

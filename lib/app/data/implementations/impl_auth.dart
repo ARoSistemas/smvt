@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../domain/entities/models/mdl_ticket.dart';
 import '../datasources/local/db_sqflite.dart';
 import '../datasources/local/dts_user_pref.dart';
 
@@ -48,8 +49,8 @@ class AuthImp implements AuthRepository {
   }
 
   @override
-  Future<int> addLectura(Lectura data) async {
-    return _dataDbf.addLectura(data);
+  Future<int> saveTicket(Ticket data) async {
+    return _dataDbf.saveTicket(data);
   }
 
   @override
@@ -73,18 +74,18 @@ class AuthImp implements AuthRepository {
   }
 
   @override
-  Future<Lectura> fetchLectura(String uuid) async {
-    return _dataDbf.fetchLectura(uuid);
+  Future<Ticket> fetchTicket(String uuid) async {
+    return _dataDbf.fetchTicket(uuid);
   }
 
   @override
-  Future<int> updateLectura(String uuid) async {
-    return _dataDbf.updateLectura(uuid);
+  Future<int> updateTicket(String uuid) async {
+    return _dataDbf.updateTicket(uuid);
   }
 
   @override
-  Future<List<Lectura>> fetchLastLecturas() async {
-    return _dataDbf.fetchLastLecturas();
+  Future<List<Ticket>> fetchLastTickets() async {
+    return _dataDbf.fetchLastTickets();
   }
 
   @override

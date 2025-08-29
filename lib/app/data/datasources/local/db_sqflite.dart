@@ -8,6 +8,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../domain/entities/models/mdl_lectura.dart';
+import '../../../domain/entities/models/mdl_ticket.dart';
 
 class DbSQfLite {
   static Database? _database;
@@ -31,12 +32,24 @@ class DbSQfLite {
       onOpen: (db) {},
       onCreate: (Database db, int version) async {
         await db.execute('''
-          CREATE TABLE lecturas(
+          CREATE TABLE tickets(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             uuid TEXT NOT NULL,
             date TEXT NOT NULL,
-            tipo TEXT NOT NULL,
-            cms TEXT NOT NULL,
+            product TEXT NOT NULL,
+            cmVacuumInit INTEGER NOT NULL,
+            cmVolumeInit INTEGER NOT NULL,
+            percentageVacuumInit TEXT NOT NULL,
+            percentageVolumeInit TEXT NOT NULL,
+            ltsToFillInit TEXT NOT NULL,
+            ltsCurrentInit TEXT NOT NULL,
+            cmVacuumEnd INTEGER NOT NULL,
+            cmVolumeEnd INTEGER NOT NULL,
+            percentageVacuumEnd TEXT NOT NULL,
+            percentageVolumeEnd TEXT NOT NULL,
+            ltsToFillEnd TEXT NOT NULL,
+            ltsCurrentEnd TEXT NOT NULL,
+            typeTicket TEXT NOT NULL,
             isSend INTEGER NOT NULL
           )''');
 
@@ -54,7 +67,6 @@ class DbSQfLite {
   /// ******************************************
   /// Table Cms
   /// ******************************************
-
   Future<int> getTotalNiveles() async {
     Database db = await database;
     List<Map<String, Object?>> res = await db.rawQuery(
@@ -95,25 +107,37 @@ class DbSQfLite {
   ///  Table Lecturas
   /// ******************************************
 
-  /// Adds a new lectura to the database.
-  Future<int> addLectura(Lectura data) async {
+  /// Adds a new ticket to the database.
+  Future<int> saveTicket(Ticket data) async {
     Database db = await database;
-    int res = await db.insert('lecturas', {
+    int res = await db.insert('tickets', {
       'uuid': data.uuid,
       'date': data.date,
-      'tipo': data.tipo,
-      'cms': data.cms,
+      'product': data.product,
+      'cmVacuumInit': data.cmVacuumInit,
+      'cmVolumeInit': data.cmVolumeInit,
+      'percentageVacuumInit': data.percentageVacuumInit,
+      'percentageVolumeInit': data.percentageVolumeInit,
+      'ltsToFillInit': data.ltsToFillInit,
+      'ltsCurrentInit': data.ltsCurrentInit,
+      'cmVacuumEnd': data.cmVacuumEnd,
+      'cmVolumeEnd': data.cmVolumeEnd,
+      'percentageVacuumEnd': data.percentageVacuumEnd,
+      'percentageVolumeEnd': data.percentageVolumeEnd,
+      'ltsToFillEnd': data.ltsToFillEnd,
+      'ltsCurrentEnd': data.ltsCurrentEnd,
+      'typeTicket': data.typeTicket,
       'isSend': 0,
     });
     return res;
   }
 
   /// Update row if was send ok
-  Future<int> updateLectura(String uuid) async {
+  Future<int> updateTicket(String uuid) async {
     Database db = await database;
 
     int res = await db.update(
-      'lecturas',
+      'tickets',
       {'isSend': 1},
       where: 'uuid = ?',
       whereArgs: [uuid],
@@ -122,30 +146,28 @@ class DbSQfLite {
     return res;
   }
 
-  /// Fetches a lectura from the database.
-  Future<Lectura> fetchLectura(String uuid) async {
+  /// Fetches a ticket from the database.
+  Future<Ticket> fetchTicket(String uuid) async {
     Database db = await database;
     List<Map<String, Object?>> res = await db.query(
-      'lecturas',
+      'tickets',
       where: 'uuid = ?',
       whereArgs: [uuid],
     );
     return res.isNotEmpty
-        ? Lectura.fromJsonRaw(res.first).copyWith(uuid: uuid)
-        : Lectura.empty();
+        ? Ticket.fromMap(res.first).copyWith(uuid: uuid)
+        : Ticket.empty();
   }
 
-  /// Fetches last 30 lecturas from the database.
-  Future<List<Lectura>> fetchLastLecturas() async {
+  /// Fetches last 30 tickets from the database.
+  Future<List<Ticket>> fetchLastTickets() async {
     Database db = await database;
     List<Map<String, Object?>> res = await db.query(
-      'lecturas',
+      'tickets',
       orderBy: 'id DESC',
       limit: 20,
     );
-    return res.isNotEmpty
-        ? res.map((e) => Lectura.fromJsonRaw(e)).toList()
-        : [];
+    return res.isNotEmpty ? res.map((e) => Ticket.fromMap(e)).toList() : [];
   }
 
   // Future<void> delDatabaseFirstRun() async {

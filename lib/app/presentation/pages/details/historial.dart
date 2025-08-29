@@ -5,9 +5,15 @@ import 'package:provider/provider.dart';
 
 import 'package:lottie/lottie.dart';
 
+import '../../providers/general_provider.dart';
+
+import '../../../config/constans/cfg_my_enums.dart';
 import '../../../config/themes/themedata.dart';
-import '../../../domain/entities/models/mdl_ticket.dart';
+
+import '../../../domain/repositories/repository_auth.dart';
 import '../../../domain/repositories/cmd_stream_repository.dart';
+
+import '../../../domain/entities/models/mdl_ticket.dart';
 
 import '../../../../core/utils/aro_assets.dart';
 
@@ -33,12 +39,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
   int _counter = 0;
   late Timer _timer;
 
-  void _printTicket() {
-    // TODO: Se valida que se manda a imprimir
-    // print(
-    //   'Printing ticket for: $_selectedIndex ::  ${historial[_selectedIndex].date} - ${historial[_selectedIndex].tipo} ',
-    // );
-
+  void _closeDialog() {
     if (mounted) {
       _timer.cancel();
       Navigator.pop(context, true);
@@ -74,31 +75,33 @@ class _HistorialDetailsState extends State<HistorialDetails> {
       if (!mounted) return;
 
       if (ModalRoute.of(context)?.isCurrent == true) {
-        switch (cmd) {
-          case 'up':
-            if (_selectedIndex > 0) {
-              _selectedIndex--;
-              _updateItem();
-            }
-            break;
-          case 'down':
-            if (_selectedIndex < historial.length - 1) {
-              _selectedIndex++;
-              _updateItem();
-            }
-            break;
-          case 'accept':
-            if (historial.isEmpty) {
-              if (mounted) {
-                _timer.cancel();
-                Navigator.pop(context, false);
-              }
-            } else {
-              _printTicket();
-            }
-            break;
+        /// Mover arriba
+        if (cmd.contains('up') && _selectedIndex > 0) {
+          _selectedIndex--;
+          _counter = 0;
+          _updateItem();
+        }
 
-          default:
+        /// Mover abajo
+        if (cmd.contains('down') && _selectedIndex < historial.length - 1) {
+          _selectedIndex++;
+          _counter = 0;
+          _updateItem();
+        }
+
+        /// Aceptar e imprimir
+        if (cmd.contains('accept')) {
+          if (historial.isEmpty) {
+            if (mounted) {
+              _timer.cancel();
+              Navigator.pop(context, false);
+            }
+          } else {
+            /// Se envia por puerto serial
+            cmdStream.sendToPort(historial[_selectedIndex].toJson());
+
+            _closeDialog();
+          }
         }
       }
     });
@@ -116,8 +119,31 @@ class _HistorialDetailsState extends State<HistorialDetails> {
     });
   }
 
-  void _loadData() {
+  Future<void> _loadData() async {
     // leer los datos del db y actualizar
+    final stateProvider = context.read<GeneralProvider>();
+    final customer = stateProvider.empresa;
+    final address = stateProvider.direccion;
+
+    /// Se recibe el nivel actual del vacio del tanque en centímetros
+    final authImpl = Provider.of<AuthRepository>(context, listen: false);
+
+    /// Se obtiene el historial de tickets
+    final fetch = await authImpl.fetchLastTickets();
+    historial = fetch.map((ticket) {
+      return ticket.copyWith(
+        customer: customer,
+        address: address,
+        title: ticket.typeTicket == 0
+            ? TicketType.inventory.type
+            : TicketType.reception.type,
+      );
+    }).toList();
+
+    historial[0].isSelected = true;
+    setState(() {});
+
+    return;
   }
 
   @override
@@ -145,53 +171,54 @@ class _HistorialDetailsState extends State<HistorialDetails> {
       color: secondaryColor,
       child: historial.isEmpty
           ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: widget.height * 0.5,
-                    width: widget.width * 0.7,
-                    child: Lottie.asset(
-                      ARoAssets.animations('warning'),
-                      fit: BoxFit.fitHeight,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: widget.height * 0.4,
+                      width: widget.width * 0.7,
+                      child: Lottie.asset(
+                        ARoAssets.animations('warning'),
+                        fit: BoxFit.fitHeight,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'No hay reportes para mostrar',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
+                    Text(
+                      'No hay reportes para mostrar',
+                      style: TextStyle(
+                        fontSize: widget.height * 0.1,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 30),
+                    SizedBox(height: widget.height * 0.04),
 
-                  /// Enter
-                  Container(
-                    padding: const EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: Colors.blue.withValues(alpha: 0.5),
-                        width: 2,
-                      ),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () => cmdStream.cmdStreamSend.add('accept'),
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                    /// Enter
+                    Container(
+                      padding: const EdgeInsets.all(25),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.blue.withValues(alpha: 0.5),
+                          width: 2,
                         ),
-                        padding: const EdgeInsets.all(20),
                       ),
-                      child: const Icon(
-                        Icons.subdirectory_arrow_left,
-                        size: 60,
+                      child: ElevatedButton(
+                        onPressed: () => cmdStream.cmdStreamSend.add('accept'),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          padding: const EdgeInsets.all(20),
+                        ),
+                        child: Icon(
+                          Icons.subdirectory_arrow_left,
+                          size: widget.height * 0.06,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             )
           : Row(
@@ -202,7 +229,7 @@ class _HistorialDetailsState extends State<HistorialDetails> {
                     Text(
                       'Historial de Reportes',
                       style: TextStyle(
-                        fontSize: 40,
+                        fontSize: widget.height * 0.06,
                         fontWeight: FontWeight.bold,
                         color: primaryColor,
                       ),
@@ -210,41 +237,64 @@ class _HistorialDetailsState extends State<HistorialDetails> {
                     SizedBox(
                       height: widget.height / 1.21,
                       width: widget.width,
-                      child: ListView.builder(
-                        itemCount: historial.length,
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        trackVisibility: true,
+                        thickness: 8.0,
                         controller: _scrollController,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, i) {
-                          return Container(
-                            margin: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: historial[i].isSelected
-                                  ? primaryColor
-                                  : Colors.grey.shade300,
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                '${historial[i].date} - ${historial[i].title}',
-                                style: TextStyle(
-                                  fontSize: 35,
-                                  fontWeight: FontWeight.bold,
+                        radius: const Radius.circular(10),
+                        child: ListView.builder(
+                          itemCount: historial.length,
+                          controller: _scrollController,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, i) {
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
                                   color: historial[i].isSelected
-                                      ? secondaryColor
-                                      : Colors.black,
+                                      ? primaryColor
+                                      : Colors.grey.shade300,
+                                  width: 2,
+                                ),
+                                color: historial[i].isSelected
+                                    ? Colors.blue.withValues(alpha: 0.2)
+                                    : Colors.grey.shade300,
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  '${historial[i].date} - ${historial[i].title}',
+                                  style: TextStyle(
+                                    fontSize: widget.height * 0.04,
+                                    fontWeight: FontWeight.bold,
+                                    color: historial[i].isSelected
+                                        ? primaryColor
+                                        : Colors.black,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  '${historial[i].product} | Litros Init: ${historial[i].ltsCurrentInit} | Litros End: ${historial[i].ltsCurrentEnd}',
+                                  style: TextStyle(
+                                    fontSize: widget.height * 0.045,
+                                    fontWeight: FontWeight.bold,
+                                    color: historial[i].isSelected
+                                        ? Colors.black
+                                        : Colors.black,
+                                  ),
+                                ),
+                                trailing: Icon(
+                                  historial[i].isSelected
+                                      ? Icons.check_circle
+                                      : Icons.circle_outlined,
+                                  color: historial[i].isSelected
+                                      ? primaryColor
+                                      : Colors.grey.shade100,
                                 ),
                               ),
-                              trailing: Icon(
-                                historial[i].isSelected
-                                    ? Icons.check_circle
-                                    : Icons.circle_outlined,
-                                color: historial[i].isSelected
-                                    ? secondaryColor
-                                    : Colors.grey.shade100,
-                              ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],

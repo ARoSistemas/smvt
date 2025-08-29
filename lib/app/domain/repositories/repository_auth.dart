@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../entities/models/mdl_empresa.dart';
 import '../entities/models/mdl_lectura.dart';
+import '../entities/models/mdl_ticket.dart';
 
 abstract class AuthRepository {
   Future<bool> get isSignedIn;
@@ -33,17 +34,17 @@ abstract class AuthRepository {
   /// get data nivel from DBF
   Future<Lectura> fetchDataNivel(int cms);
 
-  /// Adds a new lectura to the database.
-  Future<int> addLectura(Lectura data);
+  /// Adds a new ticket to the database.
+  Future<int> saveTicket(Ticket data);
 
   /// Update row if was send ok
-  Future<int> updateLectura(String uuid);
+  Future<int> updateTicket(String uuid);
 
-  /// Fetches a lectura from the database.
-  Future<Lectura> fetchLectura(String uuid);
+  /// Fetches a ticket from the database.
+  Future<Ticket> fetchTicket(String uuid);
 
-  /// Fetches last 30 lecturas
-  Future<List<Lectura>> fetchLastLecturas();
+  /// Fetches last 30 tickets
+  Future<List<Ticket>> fetchLastTickets();
 
   String getUuid();
 

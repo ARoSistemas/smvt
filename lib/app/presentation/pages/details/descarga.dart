@@ -8,10 +8,10 @@ import 'package:lottie/lottie.dart';
 
 import '../../../config/themes/themedata.dart';
 
+import '../../../domain/repositories/cmd_stream_repository.dart';
+
 import '../../../../core/utils/aro_assets.dart';
 import '../../../../core/widgets/wdgt_aro_image.dart';
-
-import '../../../domain/repositories/cmd_stream_repository.dart';
 
 class DescargaPage extends StatefulWidget {
   const DescargaPage({super.key, required this.height, required this.width});
@@ -42,12 +42,6 @@ class _DescargaPageState extends State<DescargaPage> {
     return randomNumber + 1;
   }
 
-  ///
-  ///
-  ///
-  ///
-  ///
-
   void _initStream() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cmdStream = Provider.of<CmdStreamRepository>(
@@ -59,7 +53,6 @@ class _DescargaPageState extends State<DescargaPage> {
         if (ModalRoute.of(context)?.isCurrent == true) {
           /// Se continua con el proceso de descarga
           if (cmd.contains('accept')) {
-            print('🌭 Se simula la lectura del tanque');
             cmdStream.cmdStreamSend.add(
               jsonEncode({'level': getRandomNumber(true)}),
             );

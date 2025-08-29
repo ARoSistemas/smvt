@@ -23,8 +23,9 @@ class CmdStreamImpl implements CmdStreamRepository {
   StreamSink<String> get cmdStreamSend => _stream.sink;
 
   @override
-  void send(String data) {
-    _serialManager.writeToPort(data);
+  void sendToPort(String data) {
+    print('Se envia al puerto serial : $data');
+    // _serialManager.writeToPort(data);
   }
 
   @override

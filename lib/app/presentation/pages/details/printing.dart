@@ -28,17 +28,20 @@ class _PrintingState extends State<Printing> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer(Duration(seconds: widget.holdOn ? 25 : 4), () {
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-      _timer.cancel();
-    });
+
+    if (!widget.holdOn) {
+      _timer = Timer(Duration(seconds: 4), () {
+        if (mounted) {
+          Navigator.of(context).pop();
+          _timer.cancel();
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
-    if (_timer.isActive) {
+    if (!widget.holdOn && _timer.isActive) {
       _timer.cancel();
     }
     super.dispose();
@@ -47,40 +50,33 @@ class _PrintingState extends State<Printing> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.height,
+      height: widget.height * 0.8,
       width: widget.width / 1.2,
       color: secondaryColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Imprimiendo',
-            style: TextStyle(
-              fontSize: 70,
-              fontWeight: FontWeight.bold,
-              color: primaryColor,
+      child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            Text(
+              'Imprimiendo',
+              style: TextStyle(
+                fontSize: widget.height * 0.1,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
             ),
-          ),
 
-          SizedBox(
-            height: widget.height * 0.7,
-            width: widget.width,
-            child: Lottie.asset(
-              ARoAssets.animations('printing'),
-              fit: BoxFit.cover,
+            Container(
+              height: widget.height * 3,
+              width: widget.width * 0.8,
+              constraints: BoxConstraints(maxHeight: widget.height * 0.8),
+              child: Lottie.asset(
+                ARoAssets.animations('printing'),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-
-          Text(
-            'Por favor, espere...',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: primaryColor,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

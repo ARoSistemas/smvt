@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:http/http.dart';
 
+import 'app/presentation/providers/general_provider.dart';
 import 'core/network/dts_api_call.dart';
 
 import 'app/data/datasources/local/db_sqflite.dart';
@@ -32,6 +34,9 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
+  /// Formato de miles en numeros
+  final formatterInit = NumberFormat('#,##0');
 
   /// Inicializa el repositorio de comandos
   final stream = CmdStreamImpl();
@@ -66,6 +71,7 @@ Future<void> main() async {
       stream: stream,
       apiConnRepository: apiConnRepository,
       authRepository: authImp,
+      formatterInit: formatterInit,
     ),
   );
 }
@@ -76,12 +82,13 @@ class MyApp extends StatelessWidget {
     required this.stream,
     required this.apiConnRepository,
     required this.authRepository,
+    required this.formatterInit,
   });
 
   final CmdStreamImpl stream;
   final ApiConnRepository apiConnRepository;
   final AuthRepository authRepository;
-
+  final NumberFormat formatterInit;
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -89,6 +96,7 @@ class MyApp extends StatelessWidget {
         Provider<CmdStreamRepository>(create: (_) => stream),
         Provider<ApiConnRepository>(create: (_) => apiConnRepository),
         Provider<AuthRepository>(create: (_) => authRepository),
+        ChangeNotifierProvider(create: (_) => GeneralProvider(formatterInit)),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

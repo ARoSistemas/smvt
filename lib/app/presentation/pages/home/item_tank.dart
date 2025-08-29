@@ -15,9 +15,9 @@ class TankDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sizeNameTank = hw.pText(6);
-    final sizeProduct = hw.pText(5);
-    final sizeLitros = hw.pText(4);
+    final sizeNameTank = hw.pHeight(20);
+    final sizeProduct = hw.pHeight(25);
+    final sizeLitros = hw.pHeight(15);
 
     return Container(
       decoration: BoxDecoration(

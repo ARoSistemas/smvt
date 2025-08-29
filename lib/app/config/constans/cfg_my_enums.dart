@@ -1,3 +1,13 @@
+///
+// title: isInventory ? TicketType.inventory.title : TicketType.reception.title,
+enum TicketType {
+  inventory('REPORTE DE INVENTARIO'),
+  reception('RECEPCIÓN DE PRODUCTO');
+
+  const TicketType(this.type);
+  final String type;
+}
+
 /// The `HttpMethod` enum defines various methods http of response
 enum HttpMethod { get, post, put, patch, delete, other }
 
